@@ -95,6 +95,17 @@ export const calculateAbsoluteTime = (startTime: string, offsetSeconds: number):
   return formatTime(totalSeconds);
 };
 
+// Calculate real-world time based on first video's start time and current position
+export const calculateRealWorldTime = (videos: VideoFile[], currentTimeSeconds: number): string => {
+  if (videos.length === 0) return '00:00:00';
+  
+  const firstVideoStartTime = videos[0].startTime;
+  const startSeconds = parseTime(firstVideoStartTime);
+  const realWorldSeconds = startSeconds + currentTimeSeconds;
+  
+  return formatTime(realWorldSeconds);
+};
+
 // Get video duration from file
 export const getVideoDuration = (file: File): Promise<number> => {
   return new Promise((resolve) => {

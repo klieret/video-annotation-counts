@@ -220,21 +220,21 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
               Duration: {formatTime(video.duration)} | Time range: {getVideoTimeRange(video)}
             </small>
           </Col>
-          <Col xs="auto">
-            <Form.Label className="small text-muted mb-1">Start Time</Form.Label>
-            <Form.Control
-              type="text"
-              size="sm"
-              value={video.startTime}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStartTimeChange(video.id, e.target.value)}
-              placeholder="HH:MM:SS"
-              pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
-              style={{ width: '100px' }}
-              title={index === 0 ? "Start time in HH:MM:SS format" : "Auto-calculated from previous video"}
-              disabled={index !== 0}
-              readOnly={index !== 0}
-            />
-          </Col>
+          {index === 0 && (
+            <Col xs="auto">
+              <Form.Label className="small text-muted mb-1">Start Time</Form.Label>
+              <Form.Control
+                type="text"
+                size="sm"
+                value={video.startTime}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStartTimeChange(video.id, e.target.value)}
+                placeholder="HH:MM:SS"
+                pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                style={{ width: '100px' }}
+                title="Start time in HH:MM:SS format"
+              />
+            </Col>
+          )}
           <Col xs="auto">
             <Button
               variant="outline-danger"

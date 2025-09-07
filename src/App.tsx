@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { VideoFile, EventType, Timestamp, VideoState } from './types';
-import { generateId, getVideoColors, formatTime } from './utils';
+import { generateId, getVideoColors, formatTime, calculateRealWorldTime } from './utils';
 import Header from './components/Header';
 import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
@@ -84,7 +84,7 @@ const App: React.FC = () => {
         eventName: eventType.name,
         atSecondFirst: videoState.currentTime,
         atSecondCurrent: videoState.currentVideoTime,
-        timeHHMMSS: formatTime(videoState.currentTime),
+        timeHHMMSS: calculateRealWorldTime(videos, videoState.currentTime),
         videoId: currentVideo.id,
         videoName: currentVideo.name,
         note: ''
@@ -204,7 +204,7 @@ const App: React.FC = () => {
       eventName: eventType.name,
       atSecondFirst: videoState.currentTime,
       atSecondCurrent: videoState.currentVideoTime,
-      timeHHMMSS: formatTime(videoState.currentTime),
+      timeHHMMSS: calculateRealWorldTime(videos, videoState.currentTime),
       videoId: currentVideo.id,
       videoName: currentVideo.name,
       note: ''

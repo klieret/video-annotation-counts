@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { VideoFile, VideoState, EventType } from '../types';
-import { findVideoAtTime, formatTime } from '../utils';
+import { findVideoAtTime, formatTime, calculateRealWorldTime } from '../utils';
 
 interface VideoPlayerProps {
   videos: VideoFile[];
@@ -227,11 +227,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               {/* Time display */}
               <Row className="small text-muted mb-2">
                 <Col>
-                  <div>Total: {formatTime(videoState.currentTime)} / {formatTime(videoState.totalDuration)}</div>
+                  <div>Real Time: {calculateRealWorldTime(videos, videoState.currentTime)}</div>
+                  <div>Video Time: {formatTime(videoState.currentTime)} / {formatTime(videoState.totalDuration)}</div>
                   <div>Current: {formatTime(videoState.currentVideoTime)} / {formatTime(currentVideo?.duration || 0)}</div>
                 </Col>
                 <Col className="text-end">
-                  <div>Total: {videoState.currentTime.toFixed(1)}s / {videoState.totalDuration.toFixed(1)}s</div>
+                  <div>Video: {videoState.currentTime.toFixed(1)}s / {videoState.totalDuration.toFixed(1)}s</div>
                   <div>Current: {videoState.currentVideoTime.toFixed(1)}s / {(currentVideo?.duration || 0).toFixed(1)}s</div>
                 </Col>
               </Row>
