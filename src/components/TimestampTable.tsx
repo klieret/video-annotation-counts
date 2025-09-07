@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, Table, Button, Dropdown, Modal, Row, Col } from 'react-bootstrap';
+import React, { useEffect, useRef } from 'react';
+import { Card, Table, Button, Dropdown, Row, Col } from 'react-bootstrap';
 import { Timestamp, EventType } from '../types';
 import { exportToCSV } from '../utils';
 
@@ -10,6 +10,7 @@ interface TimestampTableProps {
   currentTime: number;
   onSeekTo: (time: number) => void;
   onEditNote: (timestamp: Timestamp) => void;
+  isFullscreen?: boolean;
 }
 
 const TimestampTable: React.FC<TimestampTableProps> = ({
@@ -18,9 +19,9 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
   eventTypes,
   currentTime,
   onSeekTo,
-  onEditNote
+  onEditNote,
+  isFullscreen = false
 }) => {
-  const [showFullModal, setShowFullModal] = useState<boolean>(false);
   const activeRowRef = useRef<HTMLTableRowElement>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +93,7 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
           <tr>
             <th style={{ width: '120px' }}>Event</th>
             <th>Time</th>
+            <th>Note</th>
             <th style={{ width: '120px' }}>Actions</th>
           </tr>
         </thead>
@@ -140,6 +142,11 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
                 </td>
               <td>
                 <small>{timestamp.timeHHMMSS}</small>
+              </td>
+              <td>
+                <small className="text-muted" style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {timestamp.note || '-'}
+                </small>
               </td>
               <td>
                 <div className="d-flex gap-1">
@@ -245,68 +252,74 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
     </Table>
   );
 
-  return (
-    <>
+  if (isFullscreen) {
+    return (
       <Card style={{ height: '100%' }}>
         <Card.Header>
           <Row className="align-items-center">
             <Col>
               <h6 className="mb-0">
-                Timestamps ({timestamps.length})
+                All Timestamp Data ({timestamps.length})
               </h6>
             </Col>
             <Col xs="auto">
-              <div className="d-flex gap-2">
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
-                  onClick={() => setShowFullModal(true)}
-                  disabled={timestamps.length === 0}
-                >
-                  📋 Expand
-                </Button>
-                <Button
-                  variant="outline-success"
-                  size="sm"
-                  onClick={handleExportCSV}
-                  disabled={timestamps.length === 0}
-                >
-                  📥 CSV
-                </Button>
-              </div>
+              <Button
+                variant="outline-success"
+                size="sm"
+                onClick={handleExportCSV}
+                disabled={timestamps.length === 0}
+              >
+                📥 Export CSV
+              </Button>
             </Col>
           </Row>
         </Card.Header>
-        <Card.Body className="p-0">
+        <Card.Body className="p-0" style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
           {timestamps.length > 0 ? (
-            <CompactTable />
+            <FullTable />
           ) : (
             <div className="text-center text-muted p-4">
               <p>No timestamps recorded yet</p>
-              <small>Use number keys 1-5 to mark events</small>
+              <small>Use number keys 1-5 to mark events in the Annotation tab</small>
             </div>
           )}
         </Card.Body>
       </Card>
+    );
+  }
 
-      {/* Full data modal */}
-      <Modal show={showFullModal} onHide={() => setShowFullModal(false)} size="xl">
-        <Modal.Header closeButton>
-          <Modal.Title>All Timestamp Data</Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-          <FullTable />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-success" onClick={handleExportCSV}>
-            📥 Export CSV
-          </Button>
-          <Button variant="secondary" onClick={() => setShowFullModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+  return (
+    <Card style={{ height: '100%' }}>
+      <Card.Header>
+        <Row className="align-items-center">
+          <Col>
+            <h6 className="mb-0">
+              Timestamps ({timestamps.length})
+            </h6>
+          </Col>
+          <Col xs="auto">
+            <Button
+              variant="outline-success"
+              size="sm"
+              onClick={handleExportCSV}
+              disabled={timestamps.length === 0}
+            >
+              📥 CSV
+            </Button>
+          </Col>
+        </Row>
+      </Card.Header>
+      <Card.Body className="p-0">
+        {timestamps.length > 0 ? (
+          <CompactTable />
+        ) : (
+          <div className="text-center text-muted p-4">
+            <p>No timestamps recorded yet</p>
+            <small>Use number keys 1-5 to mark events</small>
+          </div>
+        )}
+      </Card.Body>
+    </Card>
   );
 };
 

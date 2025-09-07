@@ -1,31 +1,50 @@
 import React from 'react';
-import { Navbar, Container, Button } from 'react-bootstrap';
+import { Navbar, Container, Button, Nav } from 'react-bootstrap';
+
+export type TabType = 'video-selection' | 'annotation' | 'results';
 
 interface HeaderProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
-  showVideoUpload: boolean;
-  onToggleVideoUpload: () => void;
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
   onShowSettings: () => void;
   onShowHelp: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, showVideoUpload, onToggleVideoUpload, onShowSettings, onShowHelp }) => {
+const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, onTabChange, onShowSettings, onShowHelp }) => {
   return (
     <Navbar bg={darkMode ? 'dark' : 'light'} variant={darkMode ? 'dark' : 'light'} className="border-bottom">
       <Container fluid>
         <Navbar.Brand>
           🚶 Pedestrian Counter
         </Navbar.Brand>
-        <div className="d-flex align-items-center gap-2">
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            onClick={onToggleVideoUpload}
-            title="Toggle video upload section"
+        
+        <Nav className="mx-auto">
+          <Nav.Link 
+            active={activeTab === 'video-selection'} 
+            onClick={() => onTabChange('video-selection')}
+            className="px-4"
           >
-            {showVideoUpload ? '📁' : '📂'}
-          </Button>
+            📹 <u>V</u>ideo Selection
+          </Nav.Link>
+          <Nav.Link 
+            active={activeTab === 'annotation'} 
+            onClick={() => onTabChange('annotation')}
+            className="px-4"
+          >
+            ✏️ <u>A</u>nnotation
+          </Nav.Link>
+          <Nav.Link 
+            active={activeTab === 'results'} 
+            onClick={() => onTabChange('results')}
+            className="px-4"
+          >
+            📊 <u>R</u>esults
+          </Nav.Link>
+        </Nav>
+        
+        <div className="d-flex align-items-center gap-2">
           <Button
             variant="outline-secondary"
             size="sm"

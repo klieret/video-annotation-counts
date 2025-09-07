@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { VideoFile, EventType, Timestamp, VideoState } from './types';
 import { generateId, getVideoColors, calculateRealWorldTime } from './utils';
-import Header from './components/Header';
+import Header, { TabType } from './components/Header';
 import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
 import TimestampTable from './components/TimestampTable';
@@ -42,7 +42,7 @@ const App: React.FC = () => {
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(60); // percentage
   const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
   const [editingTimestamp, setEditingTimestamp] = useState<Timestamp | null>(null);
-  const [showVideoUpload, setShowVideoUpload] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<TabType>('video-selection');
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
   const [seekSeconds, setSeekSeconds] = useState<number>(1);
@@ -126,6 +126,35 @@ const App: React.FC = () => {
     }
 
     switch (event.key) {
+      case 'v':
+      case 'V':
+        event.preventDefault();
+        setActiveTab('video-selection');
+        break;
+      case 'a':
+      case 'A':
+        event.preventDefault();
+        setActiveTab('annotation');
+        break;
+      case 'r':
+      case 'R':
+        event.preventDefault();
+        setActiveTab('results');
+        break;
+      case 'n':
+      case 'N':
+        event.preventDefault();
+        // Add note to the last event
+        if (timestamps.length > 0) {
+          const lastTimestamp = timestamps[timestamps.length - 1];
+          setEditingTimestamp(lastTimestamp);
+          setShowNoteModal(true);
+        }
+        break;
+      case '?':
+        event.preventDefault();
+        setShowHelpModal(true);
+        break;
       case 'i':
         event.preventDefault();
         setVideoState(prev => ({ 
@@ -262,20 +291,11 @@ const App: React.FC = () => {
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  return (
-    <div className="app-container">
-      <Header 
-        darkMode={darkMode} 
-        onToggleDarkMode={() => setDarkMode(!darkMode)}
-        showVideoUpload={showVideoUpload}
-        onToggleVideoUpload={() => setShowVideoUpload(!showVideoUpload)}
-        onShowSettings={() => setShowSettingsModal(true)}
-        onShowHelp={() => setShowHelpModal(true)}
-      />
-      
-      <Container fluid className="main-content p-0">
-        <div className={`video-upload-section ${showVideoUpload ? '' : 'collapsed'}`}>
-          <div className="p-3">
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'video-selection':
+        return (
+          <Container fluid className="p-4">
             <VideoUpload 
               videos={videos}
               onVideosChange={setVideos}
@@ -283,44 +303,87 @@ const App: React.FC = () => {
               timestamps={timestamps}
               onTimestampsChange={setTimestamps}
             />
-          </div>
-        </div>
-        
-        <Row className="g-0" style={{ height: showVideoUpload ? 'calc(100% - 200px)' : '100%' }}>
-          <Col style={{ width: `${leftPanelWidth}%`, maxWidth: `${leftPanelWidth}%` }}>
-            <VideoPlayer
-              videos={videos}
-              videoState={videoState}
-              onVideoStateChange={setVideoState}
-              eventTypes={eventTypes}
-              onEventTypesChange={setEventTypes}
-              onEventMark={handleEventMark}
-              timestamps={timestamps}
-              onTimestampsChange={setTimestamps}
-            />
-          </Col>
-          
-          <div 
-            className="resize-handle"
-            onMouseDown={handleMouseDown}
-            style={{ cursor: 'col-resize' }}
-          />
-          
-          <Col style={{ width: `${100 - leftPanelWidth}%`, maxWidth: `${100 - leftPanelWidth}%` }}>
+          </Container>
+        );
+      
+      case 'annotation':
+        return (
+          <Container fluid className="main-content p-0">
+            <Row className="g-0" style={{ height: '100%' }}>
+              <Col style={{ width: `${leftPanelWidth}%`, maxWidth: `${leftPanelWidth}%` }}>
+                <VideoPlayer
+                  videos={videos}
+                  videoState={videoState}
+                  onVideoStateChange={setVideoState}
+                  eventTypes={eventTypes}
+                  onEventTypesChange={setEventTypes}
+                  onEventMark={handleEventMark}
+                  timestamps={timestamps}
+                  onTimestampsChange={setTimestamps}
+                />
+              </Col>
+              
+              <div 
+                className="resize-handle"
+                onMouseDown={handleMouseDown}
+                style={{ cursor: 'col-resize' }}
+              />
+              
+              <Col style={{ width: `${100 - leftPanelWidth}%`, maxWidth: `${100 - leftPanelWidth}%` }}>
+                <TimestampTable
+                  timestamps={timestamps}
+                  onTimestampsChange={setTimestamps}
+                  eventTypes={eventTypes}
+                  currentTime={videoState.currentTime}
+                  onSeekTo={(time: number) => {
+                    setVideoState(prev => ({ ...prev, currentTime: time }));
+                    setActiveTab('annotation');
+                  }}
+                  onEditNote={(timestamp: Timestamp) => {
+                    setEditingTimestamp(timestamp);
+                    setShowNoteModal(true);
+                  }}
+                />
+              </Col>
+            </Row>
+          </Container>
+        );
+      
+      case 'results':
+        return (
+          <Container fluid className="p-4">
             <TimestampTable
               timestamps={timestamps}
               onTimestampsChange={setTimestamps}
               eventTypes={eventTypes}
               currentTime={videoState.currentTime}
-      onSeekTo={(time: number) => setVideoState(prev => ({ ...prev, currentTime: time }))}
-      onEditNote={(timestamp: Timestamp) => {
+              onSeekTo={(time: number) => setVideoState(prev => ({ ...prev, currentTime: time }))}
+              onEditNote={(timestamp: Timestamp) => {
                 setEditingTimestamp(timestamp);
                 setShowNoteModal(true);
               }}
+              isFullscreen={true}
             />
-          </Col>
-        </Row>
-      </Container>
+          </Container>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="app-container">
+      <Header 
+        darkMode={darkMode} 
+        onToggleDarkMode={() => setDarkMode(!darkMode)}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onShowSettings={() => setShowSettingsModal(true)}
+        onShowHelp={() => setShowHelpModal(true)}
+      />
+      
+      {renderTabContent()}
 
       <NoteModal
         show={showNoteModal}

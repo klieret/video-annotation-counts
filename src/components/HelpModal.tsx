@@ -7,17 +7,28 @@ interface HelpModalProps {
 }
 
 const HelpModal: React.FC<HelpModalProps> = ({ show, onHide }) => {
-  const shortcuts = [
-    { key: '1-5', description: 'Mark events (works even when other controls are focused)' },
-    { key: 'Space', description: 'Play/pause video' },
-    { key: 'i', description: 'Increase playback speed by 1.0x' },
-    { key: 'u', description: 'Decrease playback speed by 1.0x' },
-    { key: 'j / ←', description: 'Seek backward 1 second' },
-    { key: 'l / →', description: 'Seek forward 1 second' },
-    { key: 'Shift + j / Shift + ←', description: 'Seek backward 10 seconds' },
-    { key: 'Shift + l / Shift + →', description: 'Seek forward 10 seconds' },
-    { key: 'Backspace', description: 'Delete closest timestamp to current position' }
-  ];
+  const shortcutCategories = {
+    general: [
+      { key: 'v', description: 'Switch to Video Selection tab' },
+      { key: 'a', description: 'Switch to Annotation tab' },
+      { key: 'r', description: 'Switch to Results tab' },
+      { key: '?', description: 'Show help & keyboard shortcuts' }
+    ],
+    videoPlayback: [
+      { key: 'Space', description: 'Play/pause video' },
+      { key: 'i', description: 'Increase playback speed by 1.0x' },
+      { key: 'u', description: 'Decrease playback speed by 1.0x' },
+      { key: 'j / ←', description: 'Seek backward (configurable, default 1 second)' },
+      { key: 'l / →', description: 'Seek forward (configurable, default 1 second)' },
+      { key: 'Shift + j / Shift + ←', description: 'Seek backward (configurable, default 10 seconds)' },
+      { key: 'Shift + l / Shift + →', description: 'Seek forward (configurable, default 10 seconds)' }
+    ],
+    annotation: [
+      { key: '1-5', description: 'Mark events (works even when other controls are focused)' },
+      { key: 'n', description: 'Add note to the last marked event' },
+      { key: 'Backspace', description: 'Delete closest timestamp to current position' }
+    ]
+  };
 
   return (
     <Modal show={show} onHide={onHide} centered size="lg">
@@ -46,6 +57,8 @@ const HelpModal: React.FC<HelpModalProps> = ({ show, onHide }) => {
 
         <div className="mb-4">
           <h5>Keyboard Shortcuts</h5>
+          
+          <h6 className="mt-3 mb-2">General</h6>
           <Table striped bordered hover size="sm">
             <thead>
               <tr>
@@ -54,7 +67,43 @@ const HelpModal: React.FC<HelpModalProps> = ({ show, onHide }) => {
               </tr>
             </thead>
             <tbody>
-              {shortcuts.map((shortcut, index) => (
+              {shortcutCategories.general.map((shortcut, index) => (
+                <tr key={index}>
+                  <td><code>{shortcut.key}</code></td>
+                  <td>{shortcut.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          <h6 className="mt-3 mb-2">Video Playback</h6>
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shortcutCategories.videoPlayback.map((shortcut, index) => (
+                <tr key={index}>
+                  <td><code>{shortcut.key}</code></td>
+                  <td>{shortcut.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          <h6 className="mt-3 mb-2">Annotation</h6>
+          <Table striped bordered hover size="sm">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shortcutCategories.annotation.map((shortcut, index) => (
                 <tr key={index}>
                   <td><code>{shortcut.key}</code></td>
                   <td>{shortcut.description}</td>

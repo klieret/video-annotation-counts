@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button, Row, Col, Form, Badge, Spinner, Alert } from 'react-bootstrap';
+import { Button, Row, Col, Form, Spinner, Alert } from 'react-bootstrap';
 import { VideoFile, VideoState, Timestamp } from '../types';
 import { generateId, getVideoColors, inferStartTime, getVideoDuration, calculateTotalDuration, parseTime, formatTime, calculateRealWorldTime } from '../utils';
 
@@ -178,37 +178,31 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
 
   return (
     <div>
-      <Row className="align-items-center mb-3">
-        <Col xs="auto">
-          <Button 
-            variant="primary" 
-            onClick={handleAddVideo}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Spinner size="sm" className="me-2" />
-                Loading...
-              </>
-            ) : (
-              '+ Add Video'
-            )}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/*"
-            multiple
-            style={{ display: 'none' }}
-            onChange={handleFileSelect}
-          />
-        </Col>
-        <Col xs="auto">
-          <Badge bg="info">
-            {videos.length} video{videos.length !== 1 ? 's' : ''} loaded
-          </Badge>
-        </Col>
-      </Row>
+      {/* Start time field at the top */}
+      {videos.length > 0 && (
+        <Row className="align-items-center mb-3 p-3 bg-light rounded">
+          <Col xs="auto">
+            <Form.Label className="mb-1 fw-bold">Start Time:</Form.Label>
+          </Col>
+          <Col xs="auto">
+            <Form.Control
+              type="text"
+              size="sm"
+              value={videos[0].startTime}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStartTimeChange(videos[0].id, e.target.value)}
+              placeholder="HH:MM:SS"
+              pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
+              style={{ width: '120px' }}
+              title="Start time in HH:MM:SS format"
+            />
+          </Col>
+          <Col>
+            <small className="text-muted">
+              Set the real-world start time for the first video. Subsequent videos will automatically continue from where the previous one ends.
+            </small>
+          </Col>
+        </Row>
+      )}
 
       {error && (
         <Alert variant="danger" dismissible onClose={() => setError('')}>
@@ -216,35 +210,17 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
         </Alert>
       )}
 
-      {videos.map((video, index) => (
+      {/* Video list */}
+      {videos.map((video) => (
         <Row key={video.id} className="align-items-center mb-2 p-2 border rounded">
-          <Col xs="auto">
-            <div 
-              className="video-indicator"
-              style={{ backgroundColor: video.color }}
-            />
-          </Col>
           <Col>
-            <div className="fw-bold">{video.name}</div>
+            <div className="fw-bold" title={video.name}>
+              {video.name}
+            </div>
             <small className="text-muted">
               Duration: {formatTime(video.duration)} | Time range: {getVideoTimeRange(video)}
             </small>
           </Col>
-          {index === 0 && (
-            <Col xs="auto">
-              <Form.Label className="small text-muted mb-1">Start Time</Form.Label>
-              <Form.Control
-                type="text"
-                size="sm"
-                value={video.startTime}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStartTimeChange(video.id, e.target.value)}
-                placeholder="HH:MM:SS"
-                pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
-                style={{ width: '100px' }}
-                title="Start time in HH:MM:SS format"
-              />
-            </Col>
-          )}
           <Col xs="auto">
             <Button
               variant="outline-danger"
@@ -256,6 +232,36 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
           </Col>
         </Row>
       ))}
+
+      {/* Add video button at the bottom */}
+      <Row className="align-items-center mt-3">
+        <Col>
+          <Button 
+            variant="primary" 
+            onClick={handleAddVideo}
+            disabled={loading}
+            className="w-100"
+            data-add-video="true"
+          >
+            {loading ? (
+              <>
+                <Spinner size="sm" className="me-2" />
+                Loading...
+              </>
+            ) : (
+              '📄 Add Video Files'
+            )}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleFileSelect}
+          />
+        </Col>
+      </Row>
     </div>
   );
 };

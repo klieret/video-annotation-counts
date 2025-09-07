@@ -4,7 +4,11 @@ alwaysApply: true
 
 # Project description
 
-I want to build a web interface to count pedestrians in a video for traffic engineering purposes.
+Always keep this project description up to date with every additional request for change.
+
+## Project purpose
+
+I want to build a web interface to count eventsin a video for traffic engineering purposes.
 The interface allows to efficiently mark down timestamps based on button clicks or keyboard shortcuts.
 
 ## User interface
@@ -25,7 +29,6 @@ Multiple videos can be added and will play seamlessly as one continuous video fe
 - The start time input is only shown and editable for the first video, and upon modification, all HH:MM:SS timestamps need to be recalculated.
 - After the first video, we assume that the start time is that of the previous one + the duration of the previous video (auto-calculated and no input field shown).
 - For each video, we show the HH:MM:SS - HH:MM:SS for the duration of the video.
-- Each video should have a colored indicator dot that matches the color used throughout the interface for that video.
 - Display video count and provide clear visual feedback when videos are loading.
 - The start time input should be clearly labeled and easy to understand.
 - Videos cannot be removed if annotations exist for them - show error message.
@@ -37,9 +40,7 @@ Then, there's the video preview.
 
 - The video preview can be in much lower quality than the original video.
 - We seemlessly switch between videos one after the other.
-- Different video files should get different colors for visual distinction.
 - Under the preview window we should show the name of the current video.
-- The color dot should be displayed in the video upload/management section.
 - There's a seek bar to seek the video. The bar can seek between all videos (again, they behave as if they are one continuous video).
 - The scrubbing bar should take the full width of the video.
 - The timestamp information should be below it, displaying both seconds and HH:MM:SS format.

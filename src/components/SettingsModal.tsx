@@ -45,10 +45,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <Form.Label>J/L Seeking (seconds)</Form.Label>
               <Form.Control
                 type="number"
-                min="1"
+                min="0.1"
                 max="60"
+                step="0.1"
                 value={localSeekSeconds}
-                onChange={(e) => setLocalSeekSeconds(parseInt(e.target.value) || 1)}
+                onChange={(e) => setLocalSeekSeconds(parseFloat(e.target.value) || 1)}
                 onKeyDown={(e) => e.stopPropagation()}
               />
               <Form.Text className="text-muted">
@@ -61,10 +62,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <Form.Label>Shift + J/L Seeking (seconds)</Form.Label>
               <Form.Control
                 type="number"
-                min="1"
+                min="0.1"
                 max="300"
+                step="0.1"
                 value={localSeekSecondsShift}
-                onChange={(e) => setLocalSeekSecondsShift(parseInt(e.target.value) || 10)}
+                onChange={(e) => setLocalSeekSecondsShift(parseFloat(e.target.value) || 10)}
                 onKeyDown={(e) => e.stopPropagation()}
               />
               <Form.Text className="text-muted">
