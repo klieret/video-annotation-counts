@@ -72,6 +72,11 @@ const App: React.FC = () => {
       }
       pressedKeysRef.current.add(event.key);
       
+      // Only work in annotation tab
+      if (activeTab !== 'annotation') {
+        return;
+      }
+      
       // Only prevent if actively typing in text inputs (not number inputs, ranges, etc.)
       if (targetTag === 'input' && (targetType === 'text' || targetType === 'password' || targetType === 'email')) {
         return;
@@ -168,6 +173,8 @@ const App: React.FC = () => {
         setShowHelpModal(true);
         break;
       case 'i':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         setVideoState(prev => ({ 
           ...prev, 
@@ -175,6 +182,8 @@ const App: React.FC = () => {
         }));
         break;
       case 'u':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         setVideoState(prev => ({ 
           ...prev, 
@@ -183,6 +192,8 @@ const App: React.FC = () => {
         break;
       case 'j':
       case 'J':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         // Inline seek logic
         const seekAmountJ = event.shiftKey ? -seekSecondsShift : -seekSeconds;
@@ -191,6 +202,8 @@ const App: React.FC = () => {
         break;
       case 'l':
       case 'L':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         // Inline seek logic
         const seekAmountL = event.shiftKey ? seekSecondsShift : seekSeconds;
@@ -198,6 +211,8 @@ const App: React.FC = () => {
         setVideoState(prev => ({ ...prev, currentTime: newTimeL, isPlaying: false }));
         break;
       case 'ArrowLeft':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         // Inline seek logic
         const seekAmountLeft = event.shiftKey ? -seekSecondsShift : -seekSeconds;
@@ -205,6 +220,8 @@ const App: React.FC = () => {
         setVideoState(prev => ({ ...prev, currentTime: newTimeLeft, isPlaying: false }));
         break;
       case 'ArrowRight':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         // Inline seek logic
         const seekAmountRight = event.shiftKey ? seekSecondsShift : seekSeconds;
@@ -212,6 +229,8 @@ const App: React.FC = () => {
         setVideoState(prev => ({ ...prev, currentTime: newTimeRight, isPlaying: false }));
         break;
       case 'Backspace':
+        // Only work in annotation tab
+        if (activeTab !== 'annotation') return;
         event.preventDefault();
         // Inline delete closest timestamp logic
         if (timestamps.length === 0) return;
@@ -227,7 +246,7 @@ const App: React.FC = () => {
         }
         break;
     }
-  }, [videoState, seekSeconds, seekSecondsShift, videos, eventTypes, timestamps]);
+  }, [videoState, seekSeconds, seekSecondsShift, videos, eventTypes, timestamps, activeTab]);
 
   // Handle key up to clear pressed keys
   const handleKeyUp = useCallback((event: KeyboardEvent) => {
