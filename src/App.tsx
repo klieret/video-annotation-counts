@@ -365,7 +365,10 @@ const App: React.FC = () => {
               onTimestampsChange={setTimestamps}
               eventTypes={eventTypes}
               currentTime={videoState.currentTime}
-              onSeekTo={(time: number) => setVideoState(prev => ({ ...prev, currentTime: time }))}
+              onSeekTo={(time: number) => {
+                setVideoState(prev => ({ ...prev, currentTime: time }));
+                setActiveTab('annotation');
+              }}
               onEditNote={(timestamp: Timestamp) => {
                 setEditingTimestamp(timestamp);
                 setShowNoteModal(true);
