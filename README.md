@@ -1,6 +1,6 @@
-# Pedestrian Counter
+# Video counting annotation
 
-## Installation
+## Local Installation
 
 1. Make sure you have Node.js installed (version 16 or higher recommended)
 
