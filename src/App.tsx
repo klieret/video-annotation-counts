@@ -117,9 +117,12 @@ const App: React.FC = () => {
       return;
     }
 
-    // For other shortcuts, be more restrictive
-    if (targetTag === 'input' || targetTag === 'textarea') {
-      return; // Don't handle other shortcuts when in any input
+    // For other shortcuts, be more restrictive but allow range inputs (sliders)
+    if (targetTag === 'input' && targetType !== 'range') {
+      return; // Don't handle shortcuts when in text inputs, but allow range inputs
+    }
+    if (targetTag === 'textarea') {
+      return; // Don't handle shortcuts when in textarea
     }
 
     switch (event.key) {
@@ -147,7 +150,7 @@ const App: React.FC = () => {
         // Inline seek logic
         const seekAmountJ = event.shiftKey ? -seekSecondsShift : -seekSeconds;
         const newTimeJ = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountJ));
-        setVideoState(prev => ({ ...prev, currentTime: newTimeJ }));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeJ, isPlaying: false }));
         break;
       case 'l':
       case 'L':
@@ -155,21 +158,21 @@ const App: React.FC = () => {
         // Inline seek logic
         const seekAmountL = event.shiftKey ? seekSecondsShift : seekSeconds;
         const newTimeL = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountL));
-        setVideoState(prev => ({ ...prev, currentTime: newTimeL }));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeL, isPlaying: false }));
         break;
       case 'ArrowLeft':
         event.preventDefault();
         // Inline seek logic
         const seekAmountLeft = event.shiftKey ? -seekSecondsShift : -seekSeconds;
         const newTimeLeft = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountLeft));
-        setVideoState(prev => ({ ...prev, currentTime: newTimeLeft }));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeLeft, isPlaying: false }));
         break;
       case 'ArrowRight':
         event.preventDefault();
         // Inline seek logic
         const seekAmountRight = event.shiftKey ? seekSecondsShift : seekSeconds;
         const newTimeRight = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountRight));
-        setVideoState(prev => ({ ...prev, currentTime: newTimeRight }));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeRight, isPlaying: false }));
         break;
       case 'Backspace':
         event.preventDefault();
@@ -282,6 +285,7 @@ const App: React.FC = () => {
               onVideosChange={setVideos}
               onVideoStateChange={setVideoState}
               timestamps={timestamps}
+              onTimestampsChange={setTimestamps}
             />
           </div>
         </div>
@@ -295,6 +299,8 @@ const App: React.FC = () => {
               eventTypes={eventTypes}
               onEventTypesChange={setEventTypes}
               onEventMark={handleEventMark}
+              timestamps={timestamps}
+              onTimestampsChange={setTimestamps}
             />
           </Col>
           

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Card, Button, Row, Col, Form } from 'react-bootstrap';
-import { VideoFile, VideoState, EventType } from '../types';
+import { VideoFile, VideoState, EventType, Timestamp } from '../types';
 import { findVideoAtTime, formatTime, calculateRealWorldTime } from '../utils';
 
 interface VideoPlayerProps {
@@ -10,6 +10,8 @@ interface VideoPlayerProps {
   eventTypes: EventType[];
   onEventTypesChange: (eventTypes: EventType[]) => void;
   onEventMark: (eventId: number) => void;
+  timestamps: Timestamp[];
+  onTimestampsChange: (timestamps: Timestamp[]) => void;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -18,7 +20,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onVideoStateChange,
   eventTypes,
   onEventTypesChange,
-  onEventMark
+  onEventMark,
+  timestamps,
+  onTimestampsChange
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showContextMenu, setShowContextMenu] = useState<{ show: boolean; x: number; y: number; eventId: number }>({
@@ -162,10 +166,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const handleEventNameChange = () => {
     if (editingEventName.trim()) {
+      const newEventName = editingEventName.trim();
+      
+      // Update event types
       onEventTypesChange(eventTypes.map(et => 
         et.id === showContextMenu.eventId 
-          ? { ...et, name: editingEventName.trim() }
+          ? { ...et, name: newEventName }
           : et
+      ));
+      
+      // Update all existing timestamps with the new event name
+      onTimestampsChange(timestamps.map(t => 
+        t.eventId === showContextMenu.eventId 
+          ? { ...t, eventName: newEventName }
+          : t
       ));
     }
     setShowContextMenu({ show: false, x: 0, y: 0, eventId: 0 });

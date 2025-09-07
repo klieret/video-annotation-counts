@@ -1,16 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { Button, Row, Col, Form, Badge, Spinner, Alert } from 'react-bootstrap';
 import { VideoFile, VideoState, Timestamp } from '../types';
-import { generateId, getVideoColors, inferStartTime, getVideoDuration, calculateTotalDuration, parseTime, formatTime } from '../utils';
+import { generateId, getVideoColors, inferStartTime, getVideoDuration, calculateTotalDuration, parseTime, formatTime, calculateRealWorldTime } from '../utils';
 
 interface VideoUploadProps {
   videos: VideoFile[];
   onVideosChange: (videos: VideoFile[]) => void;
   onVideoStateChange: React.Dispatch<React.SetStateAction<VideoState>>;
   timestamps: Timestamp[];
+  onTimestampsChange: (timestamps: Timestamp[]) => void;
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVideoStateChange, timestamps }) => {
+const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVideoStateChange, timestamps, onTimestampsChange }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -158,6 +159,15 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
     }
 
     onVideosChange(updatedVideos);
+
+    // Update all existing timestamps with new real-world times
+    if (timestamps.length > 0) {
+      const updatedTimestamps = timestamps.map(timestamp => ({
+        ...timestamp,
+        timeHHMMSS: calculateRealWorldTime(updatedVideos, timestamp.atSecondFirst)
+      }));
+      onTimestampsChange(updatedTimestamps);
+    }
   };
 
   const getVideoTimeRange = (video: VideoFile): string => {
