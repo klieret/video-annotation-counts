@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Card, Button, Row, Col, Form, ProgressBar } from 'react-bootstrap';
+import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { VideoFile, VideoState, EventType } from '../types';
 import { findVideoAtTime, formatTime } from '../utils';
 

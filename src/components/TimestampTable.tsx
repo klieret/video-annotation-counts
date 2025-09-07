@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, Table, Button, Dropdown, Modal, Row, Col } from 'react-bootstrap';
 import { Timestamp, EventType } from '../types';
-import { exportToCSV, formatTime } from '../utils';
+import { exportToCSV } from '../utils';
 
 interface TimestampTableProps {
   timestamps: Timestamp[];

@@ -71,7 +71,29 @@ const App: React.FC = () => {
         return;
       }
       event.preventDefault();
-      handleEventMark(parseInt(event.key));
+      // Inline event marking logic
+      if (videos.length === 0) return;
+      const currentVideo = videos[videoState.currentVideoIndex];
+      if (!currentVideo) return;
+      const eventType = eventTypes.find(e => e.id === parseInt(event.key));
+      if (!eventType) return;
+
+      const newTimestamp = {
+        id: Math.random().toString(36).substr(2, 9),
+        eventId: parseInt(event.key),
+        eventName: eventType.name,
+        atSecondFirst: videoState.currentTime,
+        atSecondCurrent: videoState.currentVideoTime,
+        timeHHMMSS: formatTime(videoState.currentTime),
+        videoId: currentVideo.id,
+        videoName: currentVideo.name,
+        note: ''
+      };
+
+      setTimestamps(prev => [...prev, newTimestamp].sort((a, b) => a.atSecondFirst - b.atSecondFirst));
+      setEventTypes(prev => prev.map(e => 
+        e.id === parseInt(event.key) ? { ...e, count: e.count + 1 } : e
+      ));
       return;
     }
 
@@ -116,27 +138,50 @@ const App: React.FC = () => {
       case 'j':
       case 'J':
         event.preventDefault();
-        seekVideo(event.shiftKey ? -seekSecondsShift : -seekSeconds);
+        // Inline seek logic
+        const seekAmountJ = event.shiftKey ? -seekSecondsShift : -seekSeconds;
+        const newTimeJ = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountJ));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeJ }));
         break;
       case 'l':
       case 'L':
         event.preventDefault();
-        seekVideo(event.shiftKey ? seekSecondsShift : seekSeconds);
+        // Inline seek logic
+        const seekAmountL = event.shiftKey ? seekSecondsShift : seekSeconds;
+        const newTimeL = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountL));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeL }));
         break;
       case 'ArrowLeft':
         event.preventDefault();
-        seekVideo(event.shiftKey ? -seekSecondsShift : -seekSeconds);
+        // Inline seek logic
+        const seekAmountLeft = event.shiftKey ? -seekSecondsShift : -seekSeconds;
+        const newTimeLeft = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountLeft));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeLeft }));
         break;
       case 'ArrowRight':
         event.preventDefault();
-        seekVideo(event.shiftKey ? seekSecondsShift : seekSeconds);
+        // Inline seek logic
+        const seekAmountRight = event.shiftKey ? seekSecondsShift : seekSeconds;
+        const newTimeRight = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seekAmountRight));
+        setVideoState(prev => ({ ...prev, currentTime: newTimeRight }));
         break;
       case 'Backspace':
         event.preventDefault();
-        handleDeleteClosestTimestamp();
+        // Inline delete closest timestamp logic
+        if (timestamps.length === 0) return;
+        const closest = timestamps.reduce((prev, curr) => 
+          Math.abs(curr.atSecondFirst - videoState.currentTime) < Math.abs(prev.atSecondFirst - videoState.currentTime) 
+            ? curr : prev
+        );
+        if (window.confirm(`Delete timestamp at ${closest.timeHHMMSS} for ${closest.eventName}?`)) {
+          setTimestamps(prev => prev.filter(t => t.id !== closest.id));
+          setEventTypes(prev => prev.map(e => 
+            e.id === closest.eventId ? { ...e, count: Math.max(0, e.count - 1) } : e
+          ));
+        }
         break;
     }
-  }, [videoState.currentTime, seekSeconds, seekSecondsShift]);
+  }, [videoState, seekSeconds, seekSecondsShift, videos, eventTypes, timestamps]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
