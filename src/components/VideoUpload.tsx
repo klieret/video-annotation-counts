@@ -230,7 +230,9 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
               placeholder="HH:MM:SS"
               pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
               style={{ width: '100px' }}
-              title="Start time in HH:MM:SS format"
+              title={index === 0 ? "Start time in HH:MM:SS format" : "Auto-calculated from previous video"}
+              disabled={index !== 0}
+              readOnly={index !== 0}
             />
           </Col>
           <Col xs="auto">

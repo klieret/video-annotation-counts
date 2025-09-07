@@ -22,8 +22,8 @@ Multiple videos can be added and will play seamlessly as one continuous video fe
 
 - Next to the video input, there's an input field to enter the start time as HH:MM:SS for the first video.
 - Try to infer the start time from video metadata if possible and set it as the default start time upon loading. This includes parsing common filename patterns like YYYYMMDD_HHMMSS or using file modification time as fallback.
-- The start time should be modifiable at any time, and upon modification, all HH:MM:SS timestamps need to be recalculated.
-- After the first video, we assume that the start time is that of the previous one + the duration of the previous video.
+- The start time should be modifiable only for the first video, and upon modification, all HH:MM:SS timestamps need to be recalculated.
+- After the first video, we assume that the start time is that of the previous one + the duration of the previous video (auto-calculated and not editable).
 - For each video, we show the HH:MM:SS - HH:MM:SS for the duration of the video.
 - Each video should have a colored indicator dot that matches the color used throughout the interface for that video.
 - Display video count and provide clear visual feedback when videos are loading.
