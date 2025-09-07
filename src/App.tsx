@@ -218,30 +218,6 @@ const App: React.FC = () => {
     ));
   };
 
-  // Seek video
-  const seekVideo = (seconds: number) => {
-    const newTime = Math.max(0, Math.min(videoState.totalDuration, videoState.currentTime + seconds));
-    setVideoState(prev => ({ ...prev, currentTime: newTime }));
-  };
-
-  // Delete closest timestamp
-  const handleDeleteClosestTimestamp = () => {
-    if (timestamps.length === 0) return;
-
-    const closest = timestamps.reduce((prev, curr) => 
-      Math.abs(curr.atSecondFirst - videoState.currentTime) < Math.abs(prev.atSecondFirst - videoState.currentTime) 
-        ? curr : prev
-    );
-
-    if (window.confirm(`Delete timestamp at ${closest.timeHHMMSS} for ${closest.eventName}?`)) {
-      setTimestamps(prev => prev.filter(t => t.id !== closest.id));
-      
-      // Update event count
-      setEventTypes(prev => prev.map(e => 
-        e.id === closest.eventId ? { ...e, count: Math.max(0, e.count - 1) } : e
-      ));
-    }
-  };
 
   // Handle resize
   const handleMouseDown = (e: React.MouseEvent) => {
