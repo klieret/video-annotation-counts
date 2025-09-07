@@ -90,6 +90,28 @@ Then, there's the video preview.
 - Notes can be added/edited via inline editing by double-clicking the note cell or using the N key shortcut for the last timestamp. Do not show a modal dialog for this, just edit the note in the table.
 - The full data modal shows additional columns: Time in seconds, Video name, and Note content.
 
+### Analysis
+
+The analysis tab (shortcut: `y`) provides statistical analysis and visualization of the recorded events:
+
+#### Simple Counter
+
+- Specify a time range with dual sliders (default: all videos)
+- Shows count of every event type within the selected time range
+- Displays total events in the selected range
+- Time range can be adjusted with start and end time sliders showing HH:MM:SS format
+
+#### Histogram Count
+
+- Specify overall time range with dual sliders
+- Set bin size in minutes (default: 5 minutes)
+- Select one specific event type for analysis
+- Displays both visual histogram bars and detailed table
+- Visual histogram shows proportional bar lengths with event colors
+- Table shows time ranges and counts for each bin
+- Shows total count for the selected event type in the range
+- Time ranges displayed in HH:MM:SS format for easy interpretation
+
 #### CSV file
 
 The CSV file contains the following columns:

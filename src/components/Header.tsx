@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Container, Button, Nav } from 'react-bootstrap';
 
-export type TabType = 'video-selection' | 'annotation' | 'results';
+export type TabType = 'video-selection' | 'annotation' | 'results' | 'analysis';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -41,6 +41,13 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, 
             className="px-4"
           >
             📊 <u>R</u>esults
+          </Nav.Link>
+          <Nav.Link 
+            active={activeTab === 'analysis'} 
+            onClick={() => onTabChange('analysis')}
+            className="px-4"
+          >
+            📈 Anal<u>y</u>sis
           </Nav.Link>
         </Nav>
         

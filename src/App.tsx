@@ -6,6 +6,7 @@ import Header, { TabType } from './components/Header';
 import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
 import TimestampTable, { TimestampTableRef } from './components/TimestampTable';
+import Analysis from './components/Analysis';
 import NoteModal from './components/NoteModal';
 import SettingsModal from './components/SettingsModal';
 import HelpModal from './components/HelpModal';
@@ -142,6 +143,11 @@ const App: React.FC = () => {
       case 'R':
         event.preventDefault();
         setActiveTab('results');
+        break;
+      case 'y':
+      case 'Y':
+        event.preventDefault();
+        setActiveTab('analysis');
         break;
       case 'n':
       case 'N':
@@ -376,6 +382,15 @@ const App: React.FC = () => {
               isFullscreen={true}
             />
           </Container>
+        );
+      
+      case 'analysis':
+        return (
+          <Analysis
+            timestamps={timestamps}
+            eventTypes={eventTypes}
+            videoState={videoState}
+          />
         );
       
       default:
