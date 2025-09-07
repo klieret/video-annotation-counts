@@ -33,7 +33,7 @@ const App: React.FC = () => {
     const colors = getVideoColors();
     return Array.from({ length: 5 }, (_, i) => ({
       id: i + 1,
-      name: `Event ${i + 1}`,
+      name: `Unnamed ${i + 1}`,
       color: colors[i],
       count: 0
     }));
