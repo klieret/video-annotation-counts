@@ -27,6 +27,9 @@ Multiple videos can be added and will play seamlessly as one continuous video fe
 - For each video, we show the HH:MM:SS - HH:MM:SS for the duration of the video.
 - Each video should have a colored indicator dot that matches the color used throughout the interface for that video.
 - Display video count and provide clear visual feedback when videos are loading.
+- The start time input should be clearly labeled and easy to understand.
+- Videos cannot be removed if annotations exist for them - show error message.
+- There should be a toggle button to hide/show the entire video upload section for a cleaner interface.
 
 ### Video preview
 
@@ -44,7 +47,7 @@ Then, there's the video preview.
 - Display format should show: Current time in seconds, Current time in HH:MM:SS, Total duration in seconds, Total duration in HH:MM:SS, and the same information for the individual current video.
 - There's a play/pause button (shortcut: space).
 - There's a mute/unmute button. Videos are muted by default but can be enabled with a button click.
-- There's a speed control that allows to enter a speed factor as floating point number or move it on a slider (it ranges from -20.0 to 20.0). Shortcuts: `i` to increase speed by 1.0, `u` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things. 
+- There's a speed control slider (ranges from -20.0 to 20.0) with current speed display. Shortcuts: `i` to increase speed by 1.0, `u` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things. 
 - Pressing `r` reverses the playback speed (i.e., turns it negatively)
 - Pressing the keys `j` and `l` should seek the video by 1 second backward/forward. Pressing Shift + `j`/`l` should seek by 10 seconds backward/forward.
 - Pressing the arrow keys `Left` and `Right` should also seek the video by 1 second. Pressing Shift + arrow keys should seek by 10 seconds.
@@ -58,8 +61,11 @@ Then, there's the video preview.
 - It should be possible to give them a custom name via right-click context menu with option: "Change name". Make sure this also updates everywhere upon change.
 - Pressing `Backspace` prompts to delete the closest timestamp to the current video preview position.
 - Under every event marker there should be a counter of how often it has been counted.
-- Each event should have a distinct color for visual identification, which is also used in the timestamp table and video indicators.
-- Help text should explain that number keys 1-5 mark events, right-click changes names, and numbers in parentheses show frequency counts.
+- Each event should have a distinct, strong color with good contrast for visual identification, which is also used in the timestamp table and video indicators.
+- Event buttons should have colored backgrounds (not just borders) with white text and text shadows for better visibility.
+- Help text should explain that number keys 1-5 mark events, right-click changes names, numbers in parentheses show frequency counts, timeline explanations, and multiple video loading capability.
+- Native video player controls should be hidden as we provide custom controls.
+- Pause functionality should work correctly even when playing in reverse.
 
 ### Event display
 
@@ -92,6 +98,23 @@ The CSV file contains the following columns:
 - video_name (name of the video)
 - note (note to the timestamp)
 
+### Top right controls
+
+- The dark/bright mode button should be on the top right
+- There should be a cog icon next to it to open a settings modal
+- Question mark icon for help
+- Toggle button to hide/show video upload section (folder icon)
+- All controls should be clearly visible and accessible
+
+#### Setting modal
+
+- j/l forward seeking seconds
+- Shift + j/l forward seeking seconds
+
+#### Question mark modal
+
+This should show a list of all shortcuts and their descriptions.
+
 ## Technical requirements
 
 - Use React and TypeScript. Prefer to use libraries rather than writing a lot of code.
@@ -102,14 +125,11 @@ The CSV file contains the following columns:
 - Keep code minimal, clean and well-organized.
 - When exceptions occur, provide a detailed error message and the stack trace. Focus on interpretability by a developer, so you do not need to add additional comments.
 - Implement proper keyboard event handling with prevention of default behaviors when appropriate.
-
-## Missing functionality to implement
-
-The following features are documented but not yet implemented in the current codebase:
-
-- **Backspace key functionality**: Pressing `Backspace` should prompt to delete the closest timestamp to the current video preview position.
-- **Event counters**: Under every event marker button there should be a counter showing how often that event has been marked.
-- **GitHub Pages deployment**: Add the deployment GitHub Actions workflow to automatically deploy to GitHub Pages.
+- Event marking shortcuts (1-5) should work even when other controls are focused, except when actively typing in text inputs.
+- Play/pause (Space) should work even when other controls are focused, except when actively typing in text inputs.
+- Application should take the full viewport space with proper responsive layout.
+- Speed controls should have fixed width and not auto-expand.
+- Use strong, contrasting colors for better accessibility and visual distinction.
 
 ## Other requirements
 
