@@ -44,7 +44,8 @@ Then, there's the video preview.
 - The scrubbing bar should take the full width of the video.
 - The timestamp information should be below it, displaying both seconds and HH:MM:SS format.
 - We should display timestamp information both for all videos together as well as for the individual current video.
-- Display format should show: Real-world time (based on configured start time), Video time in HH:MM:SS, Total duration in HH:MM:SS, and the same information for the individual current video, plus seconds display.
+- Display format should show: Wall Time (real-world time based on configured start time), Total video Time in HH:MM:SS format with seconds in parentheses, and Current video time in HH:MM:SS format with seconds in parentheses.
+- Timeline display should be compact and space-efficient, showing all timing information on a single line with pipe separators.
 - There's a play/pause button (shortcut: space).
 - There's a mute/unmute button. Videos are muted by default but can be enabled with a button click.
 - There's a speed control slider (ranges from -20.0 to 20.0) with current speed display. Shortcuts: `i` to increase speed by 1.0, `u` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things. 
@@ -126,6 +127,7 @@ This should show a list of all shortcuts and their descriptions.
 - When exceptions occur, provide a detailed error message and the stack trace. Focus on interpretability by a developer, so you do not need to add additional comments.
 - Implement proper keyboard event handling with prevention of default behaviors when appropriate.
 - Event marking shortcuts (1-5) should work even when other controls are focused, except when actively typing in text inputs.
+- Event marking keys (1-5) should not repeat when held down - user must release and press again to mark another event.
 - Play/pause (Space) should work even when other controls are focused, except when actively typing in text inputs.
 - Application should take the full viewport space with proper responsive layout.
 - Speed controls should have fixed width and not auto-expand.

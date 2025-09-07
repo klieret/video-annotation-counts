@@ -225,17 +225,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               />
               
               {/* Time display */}
-              <Row className="small text-muted mb-2">
-                <Col>
-                  <div>Real Time: {calculateRealWorldTime(videos, videoState.currentTime)}</div>
-                  <div>Video Time: {formatTime(videoState.currentTime)} / {formatTime(videoState.totalDuration)}</div>
-                  <div>Current: {formatTime(videoState.currentVideoTime)} / {formatTime(currentVideo?.duration || 0)}</div>
-                </Col>
-                <Col className="text-end">
-                  <div>Video: {videoState.currentTime.toFixed(1)}s / {videoState.totalDuration.toFixed(1)}s</div>
-                  <div>Current: {videoState.currentVideoTime.toFixed(1)}s / {(currentVideo?.duration || 0).toFixed(1)}s</div>
-                </Col>
-              </Row>
+              <div className="small text-muted mb-2">
+                <strong>Wall Time:</strong> {calculateRealWorldTime(videos, videoState.currentTime)} | <strong>Total:</strong> {formatTime(videoState.currentTime)} / {formatTime(videoState.totalDuration)} ({videoState.currentTime.toFixed(1)}s/{videoState.totalDuration.toFixed(1)}s) | <strong>Current:</strong> {formatTime(videoState.currentVideoTime)} / {formatTime(currentVideo?.duration || 0)} ({videoState.currentVideoTime.toFixed(1)}s/{(currentVideo?.duration || 0).toFixed(1)}s)
+              </div>
             </div>
 
             {/* Controls */}

@@ -49,6 +49,7 @@ const App: React.FC = () => {
   const [seekSecondsShift, setSeekSecondsShift] = useState<number>(10);
 
   const resizeRef = useRef<boolean>(false);
+  const pressedKeysRef = useRef<Set<string>>(new Set());
 
   // Dark mode effect
   useEffect(() => {
@@ -61,8 +62,13 @@ const App: React.FC = () => {
     const targetTag = (event.target as HTMLElement)?.tagName?.toLowerCase();
     const targetType = (event.target as HTMLInputElement)?.type?.toLowerCase();
     
-    // For event marking (1-5), always allow unless actively typing text
+    // Prevent key repeat for event marking keys
     if (['1', '2', '3', '4', '5'].includes(event.key)) {
+      if (pressedKeysRef.current.has(event.key)) {
+        return; // Key is already pressed, ignore repeat
+      }
+      pressedKeysRef.current.add(event.key);
+      
       // Only prevent if actively typing in text inputs (not number inputs, ranges, etc.)
       if (targetTag === 'input' && (targetType === 'text' || targetType === 'password' || targetType === 'email')) {
         return;
@@ -183,10 +189,21 @@ const App: React.FC = () => {
     }
   }, [videoState, seekSeconds, seekSecondsShift, videos, eventTypes, timestamps]);
 
+  // Handle key up to clear pressed keys
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    if (['1', '2', '3', '4', '5'].includes(event.key)) {
+      pressedKeysRef.current.delete(event.key);
+    }
+  }, []);
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [handleKeyPress]);
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyPress, handleKeyUp]);
 
   // Event marking
   const handleEventMark = (eventId: number) => {
