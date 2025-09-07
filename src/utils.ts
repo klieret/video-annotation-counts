@@ -157,7 +157,7 @@ export const exportToCSV = (timestamps: any[]): void => {
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
-  link.setAttribute('download', `pedestrian_count_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `traffic_count_${new Date().toISOString().split('T')[0]}.csv`);
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();

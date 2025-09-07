@@ -42,7 +42,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ show, onHide }) => {
             <li><strong>Load Videos:</strong> Click "Add Video" to select one or more video files</li>
             <li><strong>Multiple Videos:</strong> Load multiple videos to create one continuous timeline</li>
             <li><strong>Start Time:</strong> Set the real-world start time for the first video (auto-inferred from filename when possible)</li>
-            <li><strong>Event Marking:</strong> Use number keys 1-5 to mark pedestrian events while watching</li>
+            <li><strong>Event Marking:</strong> Use number keys 1-5 to mark traffic events while watching</li>
           </ul>
         </div>
 

@@ -8,7 +8,7 @@ Always keep this project description up to date with every additional request fo
 
 ## Project purpose
 
-I want to build a web interface to count eventsin a video for traffic engineering purposes.
+I want to build a web interface to count events in a video for traffic engineering purposes.
 The interface allows to efficiently mark down timestamps based on button clicks or keyboard shortcuts.
 
 ## User interface
@@ -33,12 +33,15 @@ Multiple videos can be added and will play seamlessly as one continuous video fe
 - The start time input should be clearly labeled and easy to understand.
 - Videos cannot be removed if annotations exist for them - show error message.
 - There should be a toggle button to hide/show the entire video upload section for a cleaner interface.
+- Videos can be reordered using drag and drop functionality with visual feedback.
+- Video reordering is disabled when annotations exist - show error message.
+- Videos are identified by name only, without colored indicator dots.
 
 ### Video preview
 
 Then, there's the video preview.
 
-- The video preview can be in much lower quality than the original video.
+- The video preview can be in much lower quality than the original video and can scale up to 70% of viewport height for better visibility.
 - We seemlessly switch between videos one after the other.
 - Under the preview window we should show the name of the current video.
 - There's a seek bar to seek the video. The bar can seek between all videos (again, they behave as if they are one continuous video).
@@ -74,15 +77,17 @@ Then, there's the video preview.
 - The table is scrollable.
 - The list is sorted by the timestamp.
 - The list is updated when the timestamps are changed. Note that the user might retroactively add or remove timestamps, so the sorting should be updated accordingly.
-- The table can be exported to a CSV file.
+- The table can be exported to a CSV file (export button only available in the Results tab).
 - There should be an expand button to show full data in a "fullscreen" modal. 
-- For the non-fullscreen view, only show: Event type (name only), timestamp, and actions as symbols
+- For the non-fullscreen view, only show: Event type (name only), timestamp, note, and actions as symbols
 - Double-clicking on the event type should allow changing the event type via a dropdown selector.
-- Actions should include: Go to (arrow symbol), Add note (pencil symbol), Delete (trash bin symbol).
+- Double-clicking on the note cell allows inline editing of notes.
+- Timestamps are clickable to jump to that time position.
+- Actions should include: Delete (trash bin symbol).
 - The timestamp closest to the current video position should be highlighted and automatically scrolled to.
 - The event display should have its own scrollbar. The event display should always have the size of the screen, not more.
 - There should be a built-in dark mode for the app with a toggle button in the header. Dark mode preference should be saved in session storage to persist across page reloads.
-- Notes can be added/edited via a modal dialog with a textarea input.
+- Notes can be added/edited via inline editing by double-clicking the note cell or using the N key shortcut for the last timestamp.
 - The full data modal shows additional columns: Time in seconds, Video name, and Note content.
 
 #### CSV file

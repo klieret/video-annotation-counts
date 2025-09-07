@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, 
     <Navbar bg={darkMode ? 'dark' : 'light'} variant={darkMode ? 'dark' : 'light'} className="border-bottom">
       <Container fluid>
         <Navbar.Brand>
-          🚶 Pedestrian Counter
+          🚗 Traffic Counter
         </Navbar.Brand>
         
         <Nav className="mx-auto">

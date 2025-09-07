@@ -1,7 +1,7 @@
 {
-  "name": "pedestrian-counter",
+  "name": "traffic-counter",
   "version": "1.0.0",
-  "description": "Web interface to count pedestrians in video for traffic engineering purposes",
+  "description": "Web interface to count traffic events in video for traffic engineering purposes",
   "private": true,
   "homepage": "https://klieret.github.io/video-annotation-counts",
   "dependencies": {

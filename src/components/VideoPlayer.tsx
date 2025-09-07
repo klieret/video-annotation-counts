@@ -191,7 +191,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <video
               ref={videoRef}
               width="100%"
-              height="300"
+              style={{ maxHeight: '70vh', height: 'auto' }}
               onTimeUpdate={handleTimeUpdate}
               onEnded={handleVideoEnd}
               onLoadedMetadata={() => {
@@ -202,13 +202,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             />
             
             <div className="mt-2">
-              <div className="d-flex align-items-center mb-2">
-                <div 
-                  className="video-indicator me-2"
-                  style={{ backgroundColor: currentVideo?.color }}
-                />
+              <div className="mb-2">
                 <small className="text-muted">
-                  {currentVideo?.name}
+                  <strong>Current Video:</strong> {currentVideo?.name}
                 </small>
               </div>
               

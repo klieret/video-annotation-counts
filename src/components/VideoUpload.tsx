@@ -15,6 +15,8 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [draggedVideoId, setDraggedVideoId] = useState<string | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleAddVideo = () => {
     fileInputRef.current?.click();
@@ -170,6 +172,81 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
     }
   };
 
+  const handleDragStart = (e: React.DragEvent, videoId: string) => {
+    // Check if there are any annotations for any of the videos
+    const hasAnnotations = timestamps.some(t => 
+      videos.some(v => v.id === t.videoId)
+    );
+    if (hasAnnotations) {
+      e.preventDefault();
+      setError('Cannot reorder videos: annotations exist. Please delete all annotations first.');
+      return;
+    }
+    
+    setDraggedVideoId(videoId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (!draggedVideoId) return;
+
+    const dragIndex = videos.findIndex(v => v.id === draggedVideoId);
+    if (dragIndex === -1 || dragIndex === dropIndex) {
+      setDraggedVideoId(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    // Reorder videos
+    const updatedVideos = [...videos];
+    const [draggedVideo] = updatedVideos.splice(dragIndex, 1);
+    updatedVideos.splice(dropIndex, 0, draggedVideo);
+
+    // Recalculate start times for all videos after the first one
+    for (let i = 1; i < updatedVideos.length; i++) {
+      const prevVideo = updatedVideos[i - 1];
+      const prevStartSeconds = parseTime(prevVideo.startTime);
+      const newStartSeconds = prevStartSeconds + prevVideo.duration;
+      updatedVideos[i] = {
+        ...updatedVideos[i],
+        startTime: formatTime(newStartSeconds)
+      };
+    }
+
+    onVideosChange(updatedVideos);
+
+    // Update video state
+    onVideoStateChange({
+      currentTime: 0,
+      currentVideoIndex: 0,
+      currentVideoTime: 0,
+      isPlaying: false,
+      isMuted: true,
+      playbackRate: 1.0,
+      totalDuration: calculateTotalDuration(updatedVideos)
+    });
+
+    setDraggedVideoId(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedVideoId(null);
+    setDragOverIndex(null);
+  };
+
   const getVideoTimeRange = (video: VideoFile): string => {
     const startSeconds = parseTime(video.startTime);
     const endSeconds = startSeconds + video.duration;
@@ -211,8 +288,32 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
       )}
 
       {/* Video list */}
-      {videos.map((video) => (
-        <Row key={video.id} className="align-items-center mb-2 p-2 border rounded">
+      {videos.map((video, index) => (
+        <Row 
+          key={video.id} 
+          className={`align-items-center mb-2 p-2 border rounded ${
+            dragOverIndex === index ? 'border-primary bg-light' : ''
+          } ${draggedVideoId === video.id ? 'opacity-50' : ''}`}
+          draggable
+          onDragStart={(e) => handleDragStart(e, video.id)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, index)}
+          onDragEnd={handleDragEnd}
+          style={{ 
+            cursor: draggedVideoId ? 'grabbing' : 'grab',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Col xs="auto">
+            <div 
+              className="text-muted"
+              style={{ fontSize: '1.2em', cursor: 'grab' }}
+              title="Drag to reorder"
+            >
+              ⋮⋮
+            </div>
+          </Col>
           <Col>
             <div className="fw-bold" title={video.name}>
               {video.name}

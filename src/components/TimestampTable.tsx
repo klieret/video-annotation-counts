@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Card, Table, Button, Dropdown, Row, Col } from 'react-bootstrap';
+import React, { useEffect, useRef, useState } from 'react';
+import { Card, Table, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
 import { Timestamp, EventType } from '../types';
 import { exportToCSV } from '../utils';
 
@@ -11,6 +11,7 @@ interface TimestampTableProps {
   onSeekTo: (time: number) => void;
   onEditNote: (timestamp: Timestamp) => void;
   isFullscreen?: boolean;
+  onTriggerInlineEdit?: (timestampId: string) => void;
 }
 
 const TimestampTable: React.FC<TimestampTableProps> = ({
@@ -24,6 +25,8 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
 }) => {
   const activeRowRef = useRef<HTMLTableRowElement>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState<string>('');
 
   // Find closest timestamp to current time
   const closestTimestamp = timestamps.reduce((closest, current) => {
@@ -86,6 +89,34 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
     return eventTypes.find(e => e.id === eventId)?.color || '#6c757d';
   };
 
+  const handleNoteDoubleClick = (timestamp: Timestamp) => {
+    setEditingNoteId(timestamp.id);
+    setEditingNoteText(timestamp.note);
+  };
+
+  const handleNoteSave = (timestampId: string) => {
+    onTimestampsChange(timestamps.map(t => 
+      t.id === timestampId ? { ...t, note: editingNoteText } : t
+    ));
+    setEditingNoteId(null);
+    setEditingNoteText('');
+  };
+
+  const handleNoteCancel = () => {
+    setEditingNoteId(null);
+    setEditingNoteText('');
+  };
+
+  const handleNoteKeyDown = (e: React.KeyboardEvent, timestampId: string) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleNoteSave(timestampId);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleNoteCancel();
+    }
+  };
+
   const CompactTable = () => (
     <div className="timestamp-table" ref={tableContainerRef}>
       <Table striped bordered hover size="sm">
@@ -94,7 +125,7 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
             <th style={{ width: '120px' }}>Event</th>
             <th>Time</th>
             <th>Note</th>
-            <th style={{ width: '120px' }}>Actions</th>
+            <th style={{ width: '60px' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -141,40 +172,53 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
                   </Dropdown>
                 </td>
               <td>
-                <small>{timestamp.timeHHMMSS}</small>
-              </td>
-              <td>
-                <small className="text-muted" style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {timestamp.note || '-'}
+                <small 
+                  style={{ cursor: 'pointer', color: '#0d6efd', textDecoration: 'underline' }}
+                  onClick={() => onSeekTo(timestamp.atSecondFirst)}
+                  title="Click to go to timestamp"
+                >
+                  {timestamp.timeHHMMSS}
                 </small>
               </td>
               <td>
-                <div className="d-flex gap-1">
-                  <Button
-                    variant="outline-primary"
+                {editingNoteId === timestamp.id ? (
+                  <Form.Control
+                    type="text"
                     size="sm"
-                    onClick={() => onSeekTo(timestamp.atSecondFirst)}
-                    title="Go to timestamp"
+                    value={editingNoteText}
+                    onChange={(e) => setEditingNoteText(e.target.value)}
+                    onKeyDown={(e) => handleNoteKeyDown(e, timestamp.id)}
+                    onBlur={() => handleNoteSave(timestamp.id)}
+                    autoFocus
+                    style={{ fontSize: '0.875rem' }}
+                  />
+                ) : (
+                  <small 
+                    className="text-muted" 
+                    style={{ 
+                      maxWidth: '150px', 
+                      overflow: 'hidden', 
+                      textOverflow: 'ellipsis', 
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
+                      display: 'block'
+                    }}
+                    onDoubleClick={() => handleNoteDoubleClick(timestamp)}
+                    title="Double-click to edit note"
                   >
-                    ➤
-                  </Button>
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    onClick={() => onEditNote(timestamp)}
-                    title="Add/edit note"
-                  >
-                    ✏️
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleDeleteTimestamp(timestamp.id)}
-                    title="Delete timestamp"
-                  >
-                    🗑️
-                  </Button>
-                </div>
+                    {timestamp.note || '-'}
+                  </small>
+                )}
+              </td>
+              <td>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() => handleDeleteTimestamp(timestamp.id)}
+                  title="Delete timestamp"
+                >
+                  🗑️
+                </Button>
               </td>
             </tr>
             );
@@ -204,47 +248,47 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
               {timestamp.eventId}
             </td>
             <td>{timestamp.eventName}</td>
-            <td>{timestamp.timeHHMMSS}</td>
+            <td>
+              <span 
+                style={{ cursor: 'pointer', color: '#0d6efd', textDecoration: 'underline' }}
+                onClick={() => onSeekTo(timestamp.atSecondFirst)}
+                title="Click to go to timestamp"
+              >
+                {timestamp.timeHHMMSS}
+              </span>
+            </td>
             <td>{timestamp.atSecondFirst.toFixed(1)}</td>
+            <td>{timestamp.videoName}</td>
             <td>
-              <div className="d-flex align-items-center">
-                <div 
-                  className="video-indicator me-2"
-                  style={{ backgroundColor: getEventColor(timestamp.eventId) }}
+              {editingNoteId === timestamp.id ? (
+                <Form.Control
+                  type="text"
+                  size="sm"
+                  value={editingNoteText}
+                  onChange={(e) => setEditingNoteText(e.target.value)}
+                  onKeyDown={(e) => handleNoteKeyDown(e, timestamp.id)}
+                  onBlur={() => handleNoteSave(timestamp.id)}
+                  autoFocus
                 />
-                {timestamp.videoName}
-              </div>
+              ) : (
+                <small 
+                  style={{ cursor: 'pointer', display: 'block' }}
+                  onDoubleClick={() => handleNoteDoubleClick(timestamp)}
+                  title="Double-click to edit note"
+                >
+                  {timestamp.note || '-'}
+                </small>
+              )}
             </td>
             <td>
-              <small>{timestamp.note || '-'}</small>
-            </td>
-            <td>
-              <div className="d-flex gap-1">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => onSeekTo(timestamp.atSecondFirst)}
-                  title="Go to timestamp"
-                >
-                  ➤
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
-                  onClick={() => onEditNote(timestamp)}
-                  title="Add/edit note"
-                >
-                  ✏️
-                </Button>
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  onClick={() => handleDeleteTimestamp(timestamp.id)}
-                  title="Delete timestamp"
-                >
-                  🗑️
-                </Button>
-              </div>
+              <Button
+                variant="outline-danger"
+                size="sm"
+                onClick={() => handleDeleteTimestamp(timestamp.id)}
+                title="Delete timestamp"
+              >
+                🗑️
+              </Button>
             </td>
           </tr>
         ))}
@@ -296,16 +340,6 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
             <h6 className="mb-0">
               Timestamps ({timestamps.length})
             </h6>
-          </Col>
-          <Col xs="auto">
-            <Button
-              variant="outline-success"
-              size="sm"
-              onClick={handleExportCSV}
-              disabled={timestamps.length === 0}
-            >
-              📥 CSV
-            </Button>
           </Col>
         </Row>
       </Card.Header>
