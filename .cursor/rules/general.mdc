@@ -48,8 +48,7 @@ Then, there's the video preview.
 - Timeline display should be compact and space-efficient, showing all timing information on a single line with pipe separators.
 - There's a play/pause button (shortcut: space).
 - There's a mute/unmute button. Videos are muted by default but can be enabled with a button click.
-- There's a speed control slider (ranges from -20.0 to 20.0) with current speed display. Shortcuts: `i` to increase speed by 1.0, `u` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things. 
-- Pressing `r` reverses the playback speed (i.e., turns it negatively)
+- There's a speed control slider (ranges from 0.1 to 20.0) with current speed display. Shortcuts: `i` to increase speed by 1.0, `u` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things.
 - Pressing the keys `j` and `l` should seek the video by 1 second backward/forward. Pressing Shift + `j`/`l` should seek by 10 seconds backward/forward.
 - Pressing the arrow keys `Left` and `Right` should also seek the video by 1 second. Pressing Shift + arrow keys should seek by 10 seconds.
 
@@ -66,7 +65,6 @@ Then, there's the video preview.
 - Event buttons should have colored backgrounds (not just borders) with white text and text shadows for better visibility.
 - Help text should explain that number keys 1-5 mark events, right-click changes names, numbers in parentheses show frequency counts, timeline explanations, and multiple video loading capability.
 - Native video player controls should be hidden as we provide custom controls.
-- Pause functionality should work correctly even when playing in reverse.
 
 ### Event display
 
@@ -77,7 +75,7 @@ Then, there's the video preview.
 - The list is updated when the timestamps are changed. Note that the user might retroactively add or remove timestamps, so the sorting should be updated accordingly.
 - The table can be exported to a CSV file.
 - There should be an expand button to show full data in a "fullscreen" modal. 
-- For the non-fullscreen view, only show: Event type (only the number), timestamp, and actions as symbols
+- For the non-fullscreen view, only show: Event type (name only), timestamp, and actions as symbols
 - Double-clicking on the event type should allow changing the event type via a dropdown selector.
 - Actions should include: Go to (arrow symbol), Add note (pencil symbol), Delete (trash bin symbol).
 - The timestamp closest to the current video position should be highlighted and automatically scrolled to.

@@ -70,45 +70,54 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
       <Table striped bordered hover size="sm">
         <thead>
           <tr>
-            <th style={{ width: '60px' }}>Event</th>
+            <th style={{ width: '120px' }}>Event</th>
             <th>Time</th>
             <th style={{ width: '120px' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {timestamps.map(timestamp => (
-            <tr
-              key={timestamp.id}
-              ref={closestTimestamp?.id === timestamp.id ? activeRowRef : null}
-              className={`timestamp-row ${closestTimestamp?.id === timestamp.id ? 'active' : ''}`}
-            >
-              <td>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="link"
-                    size="sm"
-                    style={{ 
-                      color: getEventColor(timestamp.eventId),
-                      textDecoration: 'none',
-                      padding: '0',
-                      border: 'none'
-                    }}
-                  >
-                    {timestamp.eventId}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {eventTypes.map(eventType => (
-                      <Dropdown.Item
-                        key={eventType.id}
-                        onClick={() => handleEventTypeChange(timestamp.id, eventType.id)}
-                        style={{ color: eventType.color }}
-                      >
-                        {eventType.id} - {eventType.name}
-                      </Dropdown.Item>
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
-              </td>
+          {timestamps.map((timestamp, index) => {
+            // Drop up if it's one of the last 2 items to prevent cutoff
+            const dropDirection = index >= timestamps.length - 2 ? "up" : "down";
+            
+            return (
+              <tr
+                key={timestamp.id}
+                ref={closestTimestamp?.id === timestamp.id ? activeRowRef : null}
+                className={`timestamp-row ${closestTimestamp?.id === timestamp.id ? 'active' : ''}`}
+              >
+                <td>
+                  <Dropdown drop={dropDirection}>
+                    <Dropdown.Toggle
+                      variant="link"
+                      size="sm"
+                      style={{ 
+                        color: getEventColor(timestamp.eventId),
+                        textDecoration: 'none',
+                        padding: '0',
+                        border: 'none',
+                        whiteSpace: 'nowrap',
+                        fontWeight: 'bold',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      {timestamp.eventName}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu style={{ zIndex: 1050 }}>
+                      {eventTypes.map(eventType => (
+                        <Dropdown.Item
+                          key={eventType.id}
+                          onClick={() => handleEventTypeChange(timestamp.id, eventType.id)}
+                          style={{ color: eventType.color }}
+                        >
+                          {eventType.id} - {eventType.name}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </td>
               <td>
                 <small>{timestamp.timeHHMMSS}</small>
               </td>
@@ -141,7 +150,8 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
                 </div>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </Table>
     </div>

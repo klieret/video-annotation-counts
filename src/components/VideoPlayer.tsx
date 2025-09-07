@@ -78,7 +78,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     video.muted = videoState.isMuted;
 
     // Update playback rate
-    video.playbackRate = Math.abs(videoState.playbackRate);
+    video.playbackRate = videoState.playbackRate;
 
   }, [videos, videoState, onVideoStateChange]);
 
@@ -103,22 +103,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       currentVideoTime: video.currentTime
     }));
 
-    // Handle reverse playback
-    if (videoState.playbackRate < 0 && videoState.isPlaying) {
-      const newTime = Math.max(0, video.currentTime - Math.abs(videoState.playbackRate) / 30);
-      if (newTime === 0 && videoState.currentVideoIndex > 0) {
-        // Switch to previous video
-        const prevVideoIndex = videoState.currentVideoIndex - 1;
-        video.src = videos[prevVideoIndex].url;
-        video.currentTime = videos[prevVideoIndex].duration;
-        onVideoStateChange((prev: VideoState) => ({
-          ...prev,
-          currentVideoIndex: prevVideoIndex
-        }));
-      } else {
-        video.currentTime = newTime;
-      }
-    }
   };
 
   // Handle video end
@@ -267,9 +251,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 </Col>
                 <Col>
                   <div className="speed-control">
-                    <small className="text-light me-2">Speed: {videoState.playbackRate.toFixed(1)}x</small>
+                    <small className="text-light me-2">Speed</small>
                     <Form.Range
-                      min={-20}
+                      min={0.1}
                       max={20}
                       step={0.1}
                       value={videoState.playbackRate}
@@ -277,6 +261,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                       className="ms-2"
                       style={{ width: '150px' }}
                     />
+                    <small className="text-light ms-2">{videoState.playbackRate.toFixed(1)}x</small>
                   </div>
                 </Col>
               </Row>
@@ -284,25 +269,30 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               {/* Event buttons */}
               <Row className="mb-2">
                 <Col>
-                  <div className="d-flex flex-wrap">
+                  <div className="d-flex">
                     {eventTypes.map(eventType => (
                       <Button
                         key={eventType.id}
                         variant="outline-light"
-                        size="sm"
-                        className="event-button me-1 mb-1"
+                        className="event-button flex-fill me-1"
                         style={{ 
                           backgroundColor: eventType.color, 
                           borderColor: eventType.color, 
                           color: 'white',
                           fontWeight: 'bold',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                          textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                          minHeight: '60px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center'
                         }}
                         onClick={() => onEventMark(eventType.id)}
                         onContextMenu={(e) => handleContextMenu(e, eventType.id)}
                       >
-                        <div>{eventType.id}</div>
-                        <div className="event-counter">({eventType.count})</div>
+                        <div style={{ fontSize: '1.2em', lineHeight: '1' }}>{eventType.id}</div>
+                        <div style={{ fontSize: '0.75em', marginTop: '2px', opacity: 0.9 }}>{eventType.name}</div>
+                        <div className="event-counter" style={{ fontSize: '0.7em', opacity: 0.8 }}>({eventType.count})</div>
                       </Button>
                     ))}
                   </div>
@@ -312,7 +302,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               {/* Help text */}
               <div className="help-text">
                 <small className="text-muted">
-                  Keys 1-5: Mark events | Right-click events to rename | Space: Play/pause | i/u: Speed +/- | r: Reverse | j/l: Seek ±1s | Shift+j/l: Seek ±10s
+                  Keys 1-5: Mark events | Right-click events to rename | Space: Play/pause | i/u: Speed +/- | j/l: Seek ±1s | Shift+j/l: Seek ±10s
                 </small>
               </div>
             </div>

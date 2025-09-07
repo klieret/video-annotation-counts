@@ -36,6 +36,11 @@ code {
 .event-button {
   min-width: 60px;
   margin: 2px;
+  border-radius: 8px !important;
+}
+
+.event-button:last-child {
+  margin-right: 0 !important;
 }
 
 .event-counter {

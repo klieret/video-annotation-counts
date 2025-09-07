@@ -12,7 +12,6 @@ const HelpModal: React.FC<HelpModalProps> = ({ show, onHide }) => {
     { key: 'Space', description: 'Play/pause video' },
     { key: 'i', description: 'Increase playback speed by 1.0x' },
     { key: 'u', description: 'Decrease playback speed by 1.0x' },
-    { key: 'r', description: 'Reverse playback direction' },
     { key: 'j / ←', description: 'Seek backward 1 second' },
     { key: 'l / →', description: 'Seek forward 1 second' },
     { key: 'Shift + j / Shift + ←', description: 'Seek backward 10 seconds' },

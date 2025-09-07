@@ -137,12 +137,8 @@ const App: React.FC = () => {
         event.preventDefault();
         setVideoState(prev => ({ 
           ...prev, 
-          playbackRate: Math.max(-20, prev.playbackRate - 1) 
+          playbackRate: Math.max(0.1, prev.playbackRate - 1) 
         }));
-        break;
-      case 'r':
-        event.preventDefault();
-        setVideoState(prev => ({ ...prev, playbackRate: -prev.playbackRate }));
         break;
       case 'j':
       case 'J':
