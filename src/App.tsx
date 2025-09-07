@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { VideoFile, EventType, Timestamp, VideoState } from './types';
-import { generateId, getVideoColors, formatTime, calculateRealWorldTime } from './utils';
+import { generateId, getVideoColors, calculateRealWorldTime } from './utils';
 import Header from './components/Header';
 import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
