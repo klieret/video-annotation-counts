@@ -87,7 +87,7 @@ Then, there's the video preview.
 - The timestamp closest to the current video position should be highlighted and automatically scrolled to.
 - The event display should have its own scrollbar. The event display should always have the size of the screen, not more.
 - There should be a built-in dark mode for the app with a toggle button in the header. Dark mode preference should be saved in session storage to persist across page reloads.
-- Notes can be added/edited via inline editing by double-clicking the note cell or using the N key shortcut for the last timestamp.
+- Notes can be added/edited via inline editing by double-clicking the note cell or using the N key shortcut for the last timestamp. Do not show a modal dialog for this, just edit the note in the table.
 - The full data modal shows additional columns: Time in seconds, Video name, and Note content.
 
 #### CSV file

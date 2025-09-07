@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Card, Table, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
 import { Timestamp, EventType } from '../types';
 import { exportToCSV } from '../utils';
@@ -11,10 +11,13 @@ interface TimestampTableProps {
   onSeekTo: (time: number) => void;
   onEditNote: (timestamp: Timestamp) => void;
   isFullscreen?: boolean;
-  onTriggerInlineEdit?: (timestampId: string) => void;
 }
 
-const TimestampTable: React.FC<TimestampTableProps> = ({
+export interface TimestampTableRef {
+  triggerInlineEdit: (timestampId: string) => void;
+}
+
+const TimestampTable = forwardRef<TimestampTableRef, TimestampTableProps>(({
   timestamps,
   onTimestampsChange,
   eventTypes,
@@ -22,7 +25,7 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
   onSeekTo,
   onEditNote,
   isFullscreen = false
-}) => {
+}, ref) => {
   const activeRowRef = useRef<HTMLTableRowElement>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
@@ -64,6 +67,21 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
     }
   }, [closestTimestamp?.id]);
 
+  const handleNoteDoubleClick = (timestamp: Timestamp) => {
+    setEditingNoteId(timestamp.id);
+    setEditingNoteText(timestamp.note);
+  };
+
+  // Expose functions to parent component
+  useImperativeHandle(ref, () => ({
+    triggerInlineEdit: (timestampId: string) => {
+      const timestamp = timestamps.find(t => t.id === timestampId);
+      if (timestamp) {
+        handleNoteDoubleClick(timestamp);
+      }
+    }
+  }), [timestamps]);
+
   const handleDeleteTimestamp = (timestampId: string) => {
     if (window.confirm('Delete this timestamp?')) {
       onTimestampsChange(timestamps.filter(t => t.id !== timestampId));
@@ -87,11 +105,6 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
 
   const getEventColor = (eventId: number): string => {
     return eventTypes.find(e => e.id === eventId)?.color || '#6c757d';
-  };
-
-  const handleNoteDoubleClick = (timestamp: Timestamp) => {
-    setEditingNoteId(timestamp.id);
-    setEditingNoteText(timestamp.note);
   };
 
   const handleNoteSave = (timestampId: string) => {
@@ -355,6 +368,8 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
       </Card.Body>
     </Card>
   );
-};
+});
+
+TimestampTable.displayName = 'TimestampTable';
 
 export default TimestampTable;

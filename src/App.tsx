@@ -5,7 +5,7 @@ import { generateId, getVideoColors, calculateRealWorldTime } from './utils';
 import Header, { TabType } from './components/Header';
 import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
-import TimestampTable from './components/TimestampTable';
+import TimestampTable, { TimestampTableRef } from './components/TimestampTable';
 import NoteModal from './components/NoteModal';
 import SettingsModal from './components/SettingsModal';
 import HelpModal from './components/HelpModal';
@@ -50,6 +50,8 @@ const App: React.FC = () => {
 
   const resizeRef = useRef<boolean>(false);
   const pressedKeysRef = useRef<Set<string>>(new Set());
+  const annotationTableRef = useRef<TimestampTableRef>(null);
+  const resultsTableRef = useRef<TimestampTableRef>(null);
 
   // Dark mode effect
   useEffect(() => {
@@ -147,8 +149,12 @@ const App: React.FC = () => {
         // Add note to the last event
         if (timestamps.length > 0) {
           const lastTimestamp = timestamps[timestamps.length - 1];
-          setEditingTimestamp(lastTimestamp);
-          setShowNoteModal(true);
+          // Trigger inline editing in the appropriate table based on current tab
+          if (activeTab === 'annotation' && annotationTableRef.current) {
+            annotationTableRef.current.triggerInlineEdit(lastTimestamp.id);
+          } else if (activeTab === 'results' && resultsTableRef.current) {
+            resultsTableRef.current.triggerInlineEdit(lastTimestamp.id);
+          }
         }
         break;
       case '?':
@@ -331,6 +337,7 @@ const App: React.FC = () => {
               
               <Col style={{ width: `${100 - leftPanelWidth}%`, maxWidth: `${100 - leftPanelWidth}%` }}>
                 <TimestampTable
+                  ref={annotationTableRef}
                   timestamps={timestamps}
                   onTimestampsChange={setTimestamps}
                   eventTypes={eventTypes}
@@ -353,6 +360,7 @@ const App: React.FC = () => {
         return (
           <Container fluid className="p-4">
             <TimestampTable
+              ref={resultsTableRef}
               timestamps={timestamps}
               onTimestampsChange={setTimestamps}
               eventTypes={eventTypes}
