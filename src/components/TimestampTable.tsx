@@ -22,6 +22,7 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
 }) => {
   const [showFullModal, setShowFullModal] = useState<boolean>(false);
   const activeRowRef = useRef<HTMLTableRowElement>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Find closest timestamp to current time
   const closestTimestamp = timestamps.reduce((closest, current) => {
@@ -30,13 +31,32 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
       ? current : closest;
   }, null as Timestamp | null);
 
-  // Auto-scroll to active timestamp
+  // Auto-scroll to active timestamp within the table container only
   useEffect(() => {
-    if (activeRowRef.current) {
-      activeRowRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
+    if (activeRowRef.current && tableContainerRef.current) {
+      const container = tableContainerRef.current;
+      const row = activeRowRef.current;
+      
+      const containerRect = container.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      
+      // Check if row is outside the visible area of the container
+      const isAbove = rowRect.top < containerRect.top;
+      const isBelow = rowRect.bottom > containerRect.bottom;
+      
+      if (isAbove || isBelow) {
+        // Calculate the scroll position to center the row in the container
+        const rowOffsetTop = row.offsetTop;
+        const containerHeight = container.clientHeight;
+        const rowHeight = row.clientHeight;
+        
+        const targetScrollTop = rowOffsetTop - (containerHeight / 2) + (rowHeight / 2);
+        
+        container.scrollTo({
+          top: Math.max(0, targetScrollTop),
+          behavior: 'smooth'
+        });
+      }
     }
   }, [closestTimestamp?.id]);
 
@@ -66,7 +86,7 @@ const TimestampTable: React.FC<TimestampTableProps> = ({
   };
 
   const CompactTable = () => (
-    <div className="timestamp-table">
+    <div className="timestamp-table" ref={tableContainerRef}>
       <Table striped bordered hover size="sm">
         <thead>
           <tr>
