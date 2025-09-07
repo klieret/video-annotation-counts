@@ -35,7 +35,8 @@ jobs:
     - name: Build
       run: npm run build
       env:
-        PUBLIC_URL: /peoplecount_manual
+        PUBLIC_URL: /video-annotation-counts
+        CI: false
 
     - name: Setup Pages
       uses: actions/configure-pages@v4

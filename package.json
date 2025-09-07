@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Web interface to count pedestrians in video for traffic engineering purposes",
   "private": true,
-  "homepage": "https://klieret.github.io/peoplecount_manual",
+  "homepage": "https://klieret.github.io/video-annotation-counts",
   "dependencies": {
     "@types/node": "^18.15.0",
     "@types/react": "^18.0.28",
