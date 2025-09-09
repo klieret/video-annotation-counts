@@ -67,7 +67,7 @@ Then, there's the video preview.
 - Timeline display should be compact and space-efficient, showing all timing information on a single line with pipe separators.
 - There's a play/pause button (shortcut: space).
 - There's a mute/unmute button. Videos are muted by default but can be enabled with a button click.
-- There's a speed control slider (ranges from 0.1 to 20.0) with current speed display. Shortcuts: `i` to increase speed by 1.0, `u` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things.
+- There's a speed control slider (ranges from 0.1 to 20.0) with current speed display. Shortcuts: `i` to increase speed by 1.0, `o` to decrease speed by 1.0. Holding the button down will keep on increasing or decreasing the speed, similar to how you could hold down arrow keys to change things.
 - Pressing the keys `j` and `l` should seek the video by 1 second backward/forward. Pressing Shift + `j`/`l` should seek by 10 seconds backward/forward.
 - Pressing the arrow keys `Left` and `Right` should also seek the video by 1 second. Pressing Shift + arrow keys should seek by 10 seconds.
 
@@ -109,6 +109,15 @@ Then, there's the video preview.
 
 The analysis tab (shortcut: `y`) provides statistical analysis and visualization of the recorded events:
 
+### Keyboard Shortcuts
+
+- `u`: Switch to Setup tab
+- `s`: Save session
+- `a`: Switch to Annotation tab
+- `r`: Switch to Results tab
+- `y`: Switch to Analysis tab
+- `?`: Show help & keyboard shortcuts
+
 #### Simple Counter
 
 - Specify a time range with dual sliders (default: all videos)
@@ -142,7 +151,7 @@ The CSV file contains the following columns:
 
 ### Top right controls
 
-- Save session button (💾) to download current session data with custom filename prompt
+- Save session button (💾) to download current session data with custom filename prompt (shortcut: `s`)
 - The dark/bright mode button should be on the top right
 - There should be a cog icon next to it to open a settings modal
 - Question mark icon for help

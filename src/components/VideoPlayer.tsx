@@ -298,7 +298,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               {/* Help text */}
               <div className="help-text">
                 <small className="text-muted">
-                  Keys 1-5: Mark events | Right-click events to rename | Space: Play/pause | i/u: Speed +/- | j/l: Seek ±1s | Shift+j/l: Seek ±10s
+                  Keys 1-5: Mark events | Right-click events to rename | Space: Play/pause | i/o: Speed +/- | j/l: Seek ±1s | Shift+j/l: Seek ±10s
                 </small>
               </div>
             </div>

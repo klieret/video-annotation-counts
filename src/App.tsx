@@ -135,10 +135,15 @@ const App: React.FC = () => {
     }
 
     switch (event.key) {
-      case 'v':
-      case 'V':
+      case 'u':
+      case 'U':
         event.preventDefault();
         setActiveTab('video-selection');
+        break;
+      case 's':
+      case 'S':
+        event.preventDefault();
+        handleSaveSession();
         break;
       case 'a':
       case 'A':
@@ -190,8 +195,8 @@ const App: React.FC = () => {
           playbackRate: Math.min(20, prev.playbackRate + 1) 
         }));
         break;
-      case 'u':
-        // Only work in annotation tab
+      case 'o':
+        // Only work in annotation tab - decrease playback speed
         if (activeTab !== 'annotation') return;
         event.preventDefault();
         setVideoState(prev => ({ 

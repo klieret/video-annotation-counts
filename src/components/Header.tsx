@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, 
             onClick={() => onTabChange('video-selection')}
             className="px-4"
           >
-            📹 <u>S</u>etup
+            📹 Set<u>u</u>p
           </Nav.Link>
           <Nav.Link 
             active={activeTab === 'annotation'} 

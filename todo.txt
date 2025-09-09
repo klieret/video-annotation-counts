@@ -1,2 +1,2 @@
 - Tell user that reloading page will loose progress
-
+- remove Notemodal, getVideoColors.

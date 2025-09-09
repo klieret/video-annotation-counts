@@ -9,15 +9,17 @@ interface HelpModalProps {
 const HelpModal: React.FC<HelpModalProps> = ({ show, onHide }) => {
   const shortcutCategories = {
     general: [
-      { key: 'v', description: 'Switch to Video Selection tab' },
+      { key: 'u', description: 'Switch to Setup tab' },
+      { key: 's', description: 'Save session' },
       { key: 'a', description: 'Switch to Annotation tab' },
       { key: 'r', description: 'Switch to Results tab' },
+      { key: 'y', description: 'Switch to Analysis tab' },
       { key: '?', description: 'Show help & keyboard shortcuts' }
     ],
     videoPlayback: [
       { key: 'Space', description: 'Play/pause video' },
       { key: 'i', description: 'Increase playback speed by 1.0x' },
-      { key: 'u', description: 'Decrease playback speed by 1.0x' },
+      { key: 'o', description: 'Decrease playback speed by 1.0x' },
       { key: 'j / ←', description: 'Seek backward (configurable, default 1 second)' },
       { key: 'l / →', description: 'Seek forward (configurable, default 1 second)' },
       { key: 'Shift + j / Shift + ←', description: 'Seek backward (configurable, default 10 seconds)' },
