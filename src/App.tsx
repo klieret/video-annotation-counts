@@ -366,6 +366,7 @@ const App: React.FC = () => {
                   timestamps={timestamps}
                   onTimestampsChange={setTimestamps}
                   eventTypes={eventTypes}
+                  onEventTypesChange={setEventTypes}
                   currentTime={videoState.currentTime}
                   onSeekTo={(time: number) => {
                     setVideoState(prev => ({ ...prev, currentTime: time }));
@@ -389,6 +390,7 @@ const App: React.FC = () => {
               timestamps={timestamps}
               onTimestampsChange={setTimestamps}
               eventTypes={eventTypes}
+              onEventTypesChange={setEventTypes}
               currentTime={videoState.currentTime}
               onSeekTo={(time: number) => {
                 setVideoState(prev => ({ ...prev, currentTime: time }));

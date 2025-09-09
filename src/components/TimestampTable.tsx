@@ -7,6 +7,7 @@ interface TimestampTableProps {
   timestamps: Timestamp[];
   onTimestampsChange: (timestamps: Timestamp[]) => void;
   eventTypes: EventType[];
+  onEventTypesChange: (eventTypes: EventType[]) => void;
   currentTime: number;
   onSeekTo: (time: number) => void;
   onEditNote: (timestamp: Timestamp) => void;
@@ -21,6 +22,7 @@ const TimestampTable = forwardRef<TimestampTableRef, TimestampTableProps>(({
   timestamps,
   onTimestampsChange,
   eventTypes,
+  onEventTypesChange,
   currentTime,
   onSeekTo,
   onEditNote,
@@ -84,7 +86,15 @@ const TimestampTable = forwardRef<TimestampTableRef, TimestampTableProps>(({
 
   const handleDeleteTimestamp = (timestampId: string) => {
     if (window.confirm('Delete this timestamp?')) {
-      onTimestampsChange(timestamps.filter(t => t.id !== timestampId));
+      const timestampToDelete = timestamps.find(t => t.id === timestampId);
+      if (timestampToDelete) {
+        // Update event counts
+        onEventTypesChange(eventTypes.map(e => 
+          e.id === timestampToDelete.eventId ? { ...e, count: Math.max(0, e.count - 1) } : e
+        ));
+        // Remove timestamp
+        onTimestampsChange(timestamps.filter(t => t.id !== timestampId));
+      }
     }
   };
 
@@ -316,7 +326,7 @@ const TimestampTable = forwardRef<TimestampTableRef, TimestampTableProps>(({
           <Row className="align-items-center">
             <Col>
               <h6 className="mb-0">
-                All Timestamp Data ({timestamps.length})
+                All Event Data ({timestamps.length})
               </h6>
             </Col>
             <Col xs="auto">
@@ -351,7 +361,7 @@ const TimestampTable = forwardRef<TimestampTableRef, TimestampTableProps>(({
         <Row className="align-items-center">
           <Col>
             <h6 className="mb-0">
-              Timestamps ({timestamps.length})
+              Events ({timestamps.length})
             </h6>
           </Col>
         </Row>

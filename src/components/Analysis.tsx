@@ -61,9 +61,6 @@ const Analysis: React.FC<AnalysisProps> = ({ timestamps, eventTypes, videoState 
       const startTime = histogramTimeStart + (i * binSizeSeconds);
       const endTime = Math.min(histogramTimeStart + ((i + 1) * binSizeSeconds), histogramTimeEnd);
       
-      const startMinutes = Math.floor(startTime / 60);
-      const endMinutes = Math.floor(endTime / 60);
-      
       const formatTime = (totalSeconds: number) => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
