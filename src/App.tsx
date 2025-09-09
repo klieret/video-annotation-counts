@@ -273,6 +273,27 @@ const App: React.FC = () => {
     };
   }, [handleKeyPress, handleKeyUp]);
 
+  // Warn user before closing/reloading if there's progress to lose
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // Only show warning if there's progress that could be lost
+      const hasProgress = videos.length > 0 || timestamps.length > 0;
+      
+      if (hasProgress) {
+        // Standard way to trigger browser warning dialog
+        event.preventDefault();
+        event.returnValue = ''; // Chrome requires returnValue to be set
+        return ''; // Some browsers use the return value
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [videos, timestamps]);
+
   // Event marking
   const handleEventMark = (eventId: number) => {
     if (videos.length === 0) return;

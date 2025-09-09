@@ -181,6 +181,7 @@ This should show a list of all shortcuts and their descriptions.
 - Application should take the full viewport space with proper responsive layout.
 - Speed controls should have fixed width and not auto-expand.
 - Use strong, contrasting colors for better accessibility and visual distinction.
+- Display a browser warning when users try to close or reload the page if they have progress (videos loaded or timestamps recorded) that would be lost.
 
 ## Other requirements
 
