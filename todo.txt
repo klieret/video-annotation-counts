@@ -1,3 +1,2 @@
-- Fix: Pressing the note button should add the note to the closest in time event, not the last one (there's already logic for highlighting the closest in time event, so you can repurpose that.)
 - Tell user that reloading page will loose progress
 

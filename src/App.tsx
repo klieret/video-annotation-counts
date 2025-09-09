@@ -158,14 +158,22 @@ const App: React.FC = () => {
       case 'n':
       case 'N':
         event.preventDefault();
-        // Add note to the last event
+        // Add note to the closest event in time
         if (timestamps.length > 0) {
-          const lastTimestamp = timestamps[timestamps.length - 1];
-          // Trigger inline editing in the appropriate table based on current tab
-          if (activeTab === 'annotation' && annotationTableRef.current) {
-            annotationTableRef.current.triggerInlineEdit(lastTimestamp.id);
-          } else if (activeTab === 'results' && resultsTableRef.current) {
-            resultsTableRef.current.triggerInlineEdit(lastTimestamp.id);
+          // Find closest timestamp to current time (same logic as in TimestampTable)
+          const closestTimestamp = timestamps.reduce((closest, current) => {
+            if (!closest) return current;
+            return Math.abs(current.atSecondFirst - videoState.currentTime) < Math.abs(closest.atSecondFirst - videoState.currentTime)
+              ? current : closest;
+          }, null as Timestamp | null);
+          
+          if (closestTimestamp) {
+            // Trigger inline editing in the appropriate table based on current tab
+            if (activeTab === 'annotation' && annotationTableRef.current) {
+              annotationTableRef.current.triggerInlineEdit(closestTimestamp.id);
+            } else if (activeTab === 'results' && resultsTableRef.current) {
+              resultsTableRef.current.triggerInlineEdit(closestTimestamp.id);
+            }
           }
         }
         break;
