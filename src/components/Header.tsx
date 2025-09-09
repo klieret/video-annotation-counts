@@ -10,9 +10,10 @@ interface HeaderProps {
   onTabChange: (tab: TabType) => void;
   onShowSettings: () => void;
   onShowHelp: () => void;
+  onSaveSession: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, onTabChange, onShowSettings, onShowHelp }) => {
+const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, onTabChange, onShowSettings, onShowHelp, onSaveSession }) => {
   return (
     <Navbar bg={darkMode ? 'dark' : 'light'} variant={darkMode ? 'dark' : 'light'} className="border-bottom">
       <Container fluid>
@@ -26,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, 
             onClick={() => onTabChange('video-selection')}
             className="px-4"
           >
-            📹 <u>V</u>ideo Selection
+            📹 <u>S</u>etup
           </Nav.Link>
           <Nav.Link 
             active={activeTab === 'annotation'} 
@@ -52,6 +53,14 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, activeTab, 
         </Nav>
         
         <div className="d-flex align-items-center gap-2">
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={onSaveSession}
+            title="Save Session"
+          >
+            💾
+          </Button>
           <Button
             variant="outline-secondary"
             size="sm"

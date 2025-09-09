@@ -17,12 +17,27 @@ General:
 
 - Use minimalistic design & styling
 - All buttons and shortcuts should be clearly visible and easy to understand.
+- The application has four main tabs: Setup (📹), Annotation (✏️), Results (📊), and Analysis (📈)
+- The Setup tab was previously called "Video Selection" and handles both session management and video uploads
 
 ### Input
 
-On top, there is an "add video" button. Clicking it opens a file dialog to select a video file.
-The video is added below, next to a "remove" button.
-Multiple videos can be added and will play seamlessly as one continuous video feed.
+The Setup tab (previously Video Selection) contains session management and video upload functionality.
+
+#### Session Management
+
+- At the very top of the Setup page, there's a prominent "Load Session" button to restore previously saved sessions.
+- Loading a session will show a confirmation dialog warning that it will overwrite current data.
+- After loading a session, a persistent warning panel shows which video files need to be re-added in the correct order.
+- The warning panel displays a checklist with ✅ for added videos and ⏳ for pending ones.
+- The warning disappears automatically once all required videos are added in the correct order.
+- Videos cannot be stored in session files due to size constraints, so they must be re-uploaded.
+
+#### Video Upload
+
+- There's an "Add Video Files" button that opens a file dialog to select video files.
+- Videos are added below with a "remove" button next to each.
+- Multiple videos can be added and will play seamlessly as one continuous video feed.
 
 - Next to the first video input, there's an input field to enter the start time as HH:MM:SS.
 - Try to infer the start time from video metadata if possible and set it as the default start time upon loading. This includes parsing common filename patterns like YYYYMMDD_HHMMSS or using file modification time as fallback.
@@ -127,11 +142,19 @@ The CSV file contains the following columns:
 
 ### Top right controls
 
+- Save session button (💾) to download current session data with custom filename prompt
 - The dark/bright mode button should be on the top right
 - There should be a cog icon next to it to open a settings modal
 - Question mark icon for help
-- Toggle button to hide/show video upload section (folder icon)
 - All controls should be clearly visible and accessible
+
+#### Session Data Management
+
+- Save functionality collects all internal state: dark mode, event types, timestamps, panel layout, seek settings, and video metadata
+- Save button prompts for custom filename with default timestamp-based name
+- Session files are exported as JSON with version information and export timestamp
+- Load functionality restores all settings, event types, and annotations from session files
+- Loading sessions requires user confirmation and shows persistent warnings for required video files
 
 #### Setting modal
 

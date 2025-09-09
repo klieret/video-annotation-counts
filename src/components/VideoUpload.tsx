@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button, Row, Col, Form, Spinner, Alert } from 'react-bootstrap';
 import { VideoFile, VideoState, Timestamp } from '../types';
-import { generateId, getVideoColors, inferStartTime, getVideoDuration, calculateTotalDuration, parseTime, formatTime, calculateRealWorldTime } from '../utils';
+import { generateId, getVideoColors, inferStartTime, getVideoDuration, calculateTotalDuration, parseTime, formatTime, calculateRealWorldTime, parseSessionData } from '../utils';
 
 interface VideoUploadProps {
   videos: VideoFile[];
@@ -9,10 +9,13 @@ interface VideoUploadProps {
   onVideoStateChange: React.Dispatch<React.SetStateAction<VideoState>>;
   timestamps: Timestamp[];
   onTimestampsChange: (timestamps: Timestamp[]) => void;
+  onLoadSession: (sessionData: any) => void;
+  expectedVideoFiles: {name: string; startTime: string; duration: number}[];
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVideoStateChange, timestamps, onTimestampsChange }) => {
+const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVideoStateChange, timestamps, onTimestampsChange, onLoadSession, expectedVideoFiles }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const sessionInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [draggedVideoId, setDraggedVideoId] = useState<string | null>(null);
@@ -20,6 +23,41 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
 
   const handleAddVideo = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleLoadSession = () => {
+    sessionInputRef.current?.click();
+  };
+
+  const handleSessionFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const fileContent = await file.text();
+      const sessionData = parseSessionData(fileContent);
+      
+      if (!sessionData) {
+        setError('Invalid session file format. Please select a valid session JSON file.');
+        return;
+      }
+
+      // Ask for confirmation as this will overwrite current session
+      const confirmed = window.confirm(
+        'Loading this session will overwrite your current session data. Are you sure you want to continue?'
+      );
+      
+      if (confirmed) {
+        onLoadSession(sessionData);
+        setError(''); // Clear any existing errors
+      }
+    } catch (err) {
+      setError('Failed to load session file. Please make sure it\'s a valid session file.');
+    } finally {
+      if (sessionInputRef.current) {
+        sessionInputRef.current.value = '';
+      }
+    }
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,7 +293,59 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
 
   return (
     <div>
-      {/* Start time field at the top */}
+      {/* Load Session button at the very top */}
+      <div className="mb-4 d-flex justify-content-start">
+        <Button 
+          variant="success" 
+          onClick={handleLoadSession}
+          className="d-flex flex-column align-items-center px-4 py-2"
+        >
+          <div className="fw-bold">📂 Load Session</div>
+          <small className="mt-1 opacity-75">Load a previously saved session (will overwrite current data)</small>
+        </Button>
+        <input
+          ref={sessionInputRef}
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          onChange={handleSessionFileSelect}
+        />
+      </div>
+
+      {/* Expected video files warning */}
+      {expectedVideoFiles.length > 0 && (
+        <Alert variant="warning" className="mb-4">
+          <Alert.Heading>📋 Session Loaded - Please Add Required Videos</Alert.Heading>
+          <p className="mb-2">
+            Please add the following video files in the exact order shown below:
+          </p>
+          <div className="bg-light p-3 rounded">
+            {expectedVideoFiles.map((file, index) => {
+              const isAdded = videos[index] && videos[index].name === file.name;
+              return (
+                <div key={index} className={`d-flex align-items-center mb-2 ${isAdded ? 'text-success' : 'text-muted'}`}>
+                  <span className="me-2">{isAdded ? '✅' : '⏳'}</span>
+                  <strong>{index + 1}.</strong>
+                  <span className="ms-2">{file.name}</span>
+                  <span className="ms-auto text-muted">({file.startTime})</span>
+                </div>
+              );
+            })}
+          </div>
+          <small className="text-muted">
+            {videos.length} of {expectedVideoFiles.length} videos added. 
+            This warning will disappear once all videos are added in the correct order.
+          </small>
+        </Alert>
+      )}
+
+      {error && (
+        <Alert variant="danger" dismissible onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+
+      {/* Start time field */}
       {videos.length > 0 && (
         <Row className="align-items-center mb-3 p-3 bg-light rounded">
           <Col xs="auto">
@@ -279,12 +369,6 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
             </small>
           </Col>
         </Row>
-      )}
-
-      {error && (
-        <Alert variant="danger" dismissible onClose={() => setError('')}>
-          {error}
-        </Alert>
       )}
 
       {/* Video list */}
@@ -334,35 +418,36 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videos, onVideosChange, onVid
         </Row>
       ))}
 
-      {/* Add video button at the bottom */}
-      <Row className="align-items-center mt-3">
-        <Col>
-          <Button 
-            variant="primary" 
-            onClick={handleAddVideo}
-            disabled={loading}
-            className="w-100"
-            data-add-video="true"
-          >
-            {loading ? (
-              <>
-                <Spinner size="sm" className="me-2" />
-                Loading...
-              </>
-            ) : (
-              '📄 Add Video Files'
-            )}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/*"
-            multiple
-            style={{ display: 'none' }}
-            onChange={handleFileSelect}
-          />
-        </Col>
-      </Row>
+      {/* Add video button */}
+      <div className="mt-3 mb-3 d-flex justify-content-start">
+        <Button 
+          variant="primary" 
+          onClick={handleAddVideo}
+          disabled={loading}
+          className="d-flex flex-column align-items-center px-4 py-2"
+          data-add-video="true"
+        >
+          {loading ? (
+            <>
+              <Spinner size="sm" className="me-2" />
+              <span>Loading...</span>
+            </>
+          ) : (
+            <>
+              <div className="fw-bold">📄 Add Video Files</div>
+              <small className="mt-1 opacity-75">Add video files to analyze</small>
+            </>
+          )}
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="video/*"
+          multiple
+          style={{ display: 'none' }}
+          onChange={handleFileSelect}
+        />
+      </div>
     </div>
   );
 };

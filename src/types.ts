@@ -36,3 +36,19 @@ export interface VideoState {
   playbackRate: number;
   totalDuration: number;
 }
+
+export interface SessionData {
+  version: string;
+  exportDate: string;
+  darkMode: boolean;
+  eventTypes: EventType[];
+  timestamps: Timestamp[];
+  leftPanelWidth: number;
+  seekSeconds: number;
+  seekSecondsShift: number;
+  videoFiles: {
+    name: string;
+    startTime: string;
+    duration: number;
+  }[];
+}

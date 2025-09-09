@@ -1,4 +1,4 @@
-import { VideoFile } from './types';
+import { VideoFile, EventType, Timestamp, SessionData } from './types';
 
 // Convert seconds to HH:MM:SS format
 export const formatTime = (seconds: number): string => {
@@ -162,4 +162,66 @@ export const exportToCSV = (timestamps: any[]): void => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+
+// Create session data object from current app state
+export const createSessionData = (
+  darkMode: boolean,
+  eventTypes: EventType[],
+  timestamps: Timestamp[],
+  leftPanelWidth: number,
+  seekSeconds: number,
+  seekSecondsShift: number,
+  videos: VideoFile[]
+): SessionData => {
+  return {
+    version: '1.0.0',
+    exportDate: new Date().toISOString(),
+    darkMode,
+    eventTypes,
+    timestamps,
+    leftPanelWidth,
+    seekSeconds,
+    seekSecondsShift,
+    videoFiles: videos.map(video => ({
+      name: video.name,
+      startTime: video.startTime,
+      duration: video.duration
+    }))
+  };
+};
+
+// Export session data to JSON file
+export const exportSessionData = (sessionData: SessionData, customFilename?: string): void => {
+  const defaultFilename = `traffic_count_session_${new Date().toISOString().split('T')[0]}.json`;
+  const filename = customFilename || defaultFilename;
+  
+  const jsonContent = JSON.stringify(sessionData, null, 2);
+  const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Parse and validate session data from JSON
+export const parseSessionData = (jsonString: string): SessionData | null => {
+  try {
+    const data = JSON.parse(jsonString);
+    
+    // Basic validation
+    if (!data.version || !data.exportDate || !Array.isArray(data.eventTypes) || !Array.isArray(data.timestamps)) {
+      throw new Error('Invalid session data format');
+    }
+    
+    return data as SessionData;
+  } catch (error) {
+    console.error('Failed to parse session data:', error);
+    return null;
+  }
 };

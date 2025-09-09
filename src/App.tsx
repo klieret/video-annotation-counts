@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { VideoFile, EventType, Timestamp, VideoState } from './types';
-import { generateId, getVideoColors, calculateRealWorldTime } from './utils';
+import { VideoFile, EventType, Timestamp, VideoState, SessionData } from './types';
+import { generateId, getVideoColors, calculateRealWorldTime, createSessionData, exportSessionData } from './utils';
 import Header, { TabType } from './components/Header';
 import VideoUpload from './components/VideoUpload';
 import VideoPlayer from './components/VideoPlayer';
@@ -48,6 +48,7 @@ const App: React.FC = () => {
   const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
   const [seekSeconds, setSeekSeconds] = useState<number>(1);
   const [seekSecondsShift, setSeekSecondsShift] = useState<number>(10);
+  const [expectedVideoFiles, setExpectedVideoFiles] = useState<{name: string; startTime: string; duration: number}[]>([]);
 
   const resizeRef = useRef<boolean>(false);
   const pressedKeysRef = useRef<Set<string>>(new Set());
@@ -294,6 +295,81 @@ const App: React.FC = () => {
     ));
   };
 
+  // Save session
+  const handleSaveSession = () => {
+    const defaultFilename = `traffic_count_session_${new Date().toISOString().split('T')[0]}.json`;
+    const customFilename = prompt(
+      'Enter filename for the session file:', 
+      defaultFilename
+    );
+    
+    // If user cancels, don't save
+    if (customFilename === null) return;
+    
+    // Ensure .json extension
+    const filename = customFilename.endsWith('.json') ? customFilename : `${customFilename}.json`;
+    
+    const sessionData = createSessionData(
+      darkMode,
+      eventTypes,
+      timestamps,
+      leftPanelWidth,
+      seekSeconds,
+      seekSecondsShift,
+      videos
+    );
+    exportSessionData(sessionData, filename);
+  };
+
+  // Load session
+  const handleLoadSession = (sessionData: SessionData) => {
+    try {
+      // Update all state from session data
+      setDarkMode(sessionData.darkMode);
+      setEventTypes(sessionData.eventTypes);
+      setTimestamps(sessionData.timestamps);
+      setLeftPanelWidth(sessionData.leftPanelWidth || 60);
+      setSeekSeconds(sessionData.seekSeconds || 1);
+      setSeekSecondsShift(sessionData.seekSecondsShift || 10);
+      
+      // Clear current videos (user will need to re-add them)
+      setVideos([]);
+      setVideoState({
+        currentTime: 0,
+        currentVideoIndex: 0,
+        currentVideoTime: 0,
+        isPlaying: false,
+        isMuted: true,
+        playbackRate: 1.0,
+        totalDuration: 0
+      });
+
+      // Set expected video files for persistent warning
+      if (sessionData.videoFiles.length > 0) {
+        setExpectedVideoFiles(sessionData.videoFiles);
+      }
+    } catch (error) {
+      console.error('Error loading session:', error);
+      alert('Failed to load session data. Please try again with a valid session file.');
+    }
+  };
+
+  // Check if current videos match expected files
+  const checkExpectedVideos = (currentVideos: VideoFile[]) => {
+    if (expectedVideoFiles.length === 0) return;
+    
+    // Check if all expected videos are present in the right order
+    if (currentVideos.length >= expectedVideoFiles.length) {
+      const allMatch = expectedVideoFiles.every((expected, index) => {
+        const current = currentVideos[index];
+        return current && current.name === expected.name;
+      });
+      
+      if (allMatch) {
+        setExpectedVideoFiles([]); // Clear expected files when they match
+      }
+    }
+  };
 
   // Handle resize
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -329,10 +405,15 @@ const App: React.FC = () => {
           <Container fluid className="p-4">
             <VideoUpload 
               videos={videos}
-              onVideosChange={setVideos}
+              onVideosChange={(newVideos) => {
+                setVideos(newVideos);
+                checkExpectedVideos(newVideos);
+              }}
               onVideoStateChange={setVideoState}
               timestamps={timestamps}
               onTimestampsChange={setTimestamps}
+              onLoadSession={handleLoadSession}
+              expectedVideoFiles={expectedVideoFiles}
             />
           </Container>
         );
@@ -428,6 +509,7 @@ const App: React.FC = () => {
         onTabChange={setActiveTab}
         onShowSettings={() => setShowSettingsModal(true)}
         onShowHelp={() => setShowHelpModal(true)}
+        onSaveSession={handleSaveSession}
       />
       
       {renderTabContent()}
